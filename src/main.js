@@ -1,3 +1,4 @@
+import {generateCardsItems} from './components/data.js';
 import {generateTripInfoTemplate} from './components/trip-info.js';
 import {generateNavButtonTemplate} from './components/menu.js';
 import {generateFilterButtonTemplate} from './components/filters.js';
@@ -6,7 +7,7 @@ import {generateCardEditTemplate} from './components/card-edit.js';
 import {generateDayInfoTemplate} from './components/day-info.js';
 import {generateCardTemplate} from './components/card.js';
 
-const CARDS_COUNT = 3;
+const CARDS_COUNT = 4;
 const tripInfoElement = document.querySelector(`.trip-main__trip-info`);
 const controlsElement = document.querySelector(`.trip-controls`);
 const controlsElementHeaders = controlsElement.querySelectorAll(`h2`);
@@ -78,15 +79,8 @@ const dayInfo = {
   calendarDay: `18`
 };
 
-const cardInfo = {
-  type: `taxi`,
-  event: `Taxi to airport`,
-  timeFrom: `10:30`,
-  timeTo: `11:00`,
-  duration: `1H 30M`,
-  price: 20,
-  offer: `Order Uber`
-};
+const generateCards = (count) => new Array(count).fill(``).map(generateCardsItems);
+const initialCards = generateCards(CARDS_COUNT);
 
 // 1) Создаём контейнер
 const createContainer = (template) => {
@@ -139,10 +133,11 @@ appendToContainer(tripDayContainer, generateDayInfoTemplate(dayInfo));
 
 // 'Редактирование карточки'
 const tripEventsListContainer = createContainer(tripEventsListTemplate);
-appendToContainer(tripEventsListContainer, generateCardEditTemplate());
+appendToContainer(tripEventsListContainer, generateCardEditTemplate(initialCards.shift()));
 
-// 'Карточки'
-new Array(CARDS_COUNT).fill(``).forEach(() => appendToContainer(tripEventsListContainer, generateCardTemplate(cardInfo)));
+// Точки маршрута
+// new Array(CARDS_COUNT).fill(``).forEach(() => appendToContainer(tripEventsListContainer, generateCardTemplate(generateCardsItems())));
+appendToContainer(tripEventsListContainer, initialCards.map(generateCardTemplate).join(``));
 
 const tripDaysContainer = createContainer(tripDaysContainerTemplate);
 renderElement(tripDaysContainer, tripDayContainer);
