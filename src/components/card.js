@@ -1,6 +1,6 @@
 import {firstLetterToUppercase} from './util.js';
 
-export const generateCardTemplate = ({type, city, timeFrom, timeTo, price, offer, duration}) => {
+export const generateCardTemplate = ({type, city, timeFrom, timeTo, ticketPrice, offers, duration}) => {
   const cardTemplate = `<li class="trip-events__item">
   <div class="event">
     <div class="event__type">
@@ -18,16 +18,16 @@ export const generateCardTemplate = ({type, city, timeFrom, timeTo, price, offer
     </div>
 
     <p class="event__price">
-      &euro;&nbsp;<span class="event__price-value">${price}</span>
+      &euro;&nbsp;<span class="event__price-value">${ticketPrice}</span>
     </p>
 
     <h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">
-      <li class="event__offer">
-        <span class="event__offer-title">${offer}</span>
-        &plus;
-        &euro;&nbsp;<span class="event__offer-price">${price}</span>
-       </li>
+    ${offers.map(({title, price}) => `
+    <li class="event__offer">
+      <span class="event__offer-title">${title}</span>
+      &plus;&euro;&nbsp;<span class="event__offer-price">${price}</span>
+    </li>`).join(``)}
     </ul>
 
     <button class="event__rollup-btn" type="button">

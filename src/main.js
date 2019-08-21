@@ -13,14 +13,6 @@ const controlsElement = document.querySelector(`.trip-controls`);
 const controlsElementHeaders = controlsElement.querySelectorAll(`h2`);
 const tripEventsElement = document.querySelector(`.trip-events`);
 
-const tripInfo = {
-  startPoint: `Amsterdam`,
-  endPoint: `Amsterdam`,
-  month: `Mar`,
-  startDate: `18`,
-  endDate: `21`
-};
-
 const navigationTemplate = `<nav class="trip-controls__trip-tabs  trip-tabs"></nav>`;
 const menuButtons = [
   {
@@ -79,8 +71,19 @@ const dayInfo = {
   calendarDay: `18`
 };
 
+// Создаём точки маршрута
 const generateCards = (count) => new Array(count).fill(``).map(generateCardsItems);
 const initialCards = generateCards(CARDS_COUNT);
+
+// Получаем информацию о маршруте для хедера
+const calculateRoutePoints = (points) => {
+  return {
+    route: points.map((point) => point.city),
+    month: `Mar`,
+    startDate: `18`,
+    endDate: `21`
+  };
+};
 
 // 1) Создаём контейнер
 const createContainer = (template) => {
@@ -104,7 +107,7 @@ const renderElement = (container, element, position = `beforeEnd`) => {
 };
 
 // Информация о маршруте
-appendToContainer(tripInfoElement, generateTripInfoTemplate(tripInfo), `afterBegin`);
+appendToContainer(tripInfoElement, generateTripInfoTemplate(calculateRoutePoints(initialCards)), `afterBegin`);
 
 // 'Меню'
 const navigationContainer = createContainer(navigationTemplate);
@@ -136,7 +139,6 @@ const tripEventsListContainer = createContainer(tripEventsListTemplate);
 appendToContainer(tripEventsListContainer, generateCardEditTemplate(initialCards.shift()));
 
 // Точки маршрута
-// new Array(CARDS_COUNT).fill(``).forEach(() => appendToContainer(tripEventsListContainer, generateCardTemplate(generateCardsItems())));
 appendToContainer(tripEventsListContainer, initialCards.map(generateCardTemplate).join(``));
 
 const tripDaysContainer = createContainer(tripDaysContainerTemplate);
