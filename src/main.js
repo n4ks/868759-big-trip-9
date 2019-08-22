@@ -6,9 +6,13 @@ import {generateCardFilterButtonTemplate} from './components/card-filters.js';
 import {generateCardEditTemplate} from './components/card-edit.js';
 import {generateDayInfoTemplate} from './components/day-info.js';
 import {generateCardTemplate} from './components/card.js';
+//flatpickr
+import flatpickr from 'flatpickr';
 
 const CARDS_COUNT = 4;
 const tripInfoElement = document.querySelector(`.trip-main__trip-info`);
+const tripPriceElement = tripInfoElement.querySelector(`.trip-info__cost-value`);
+
 const controlsElement = document.querySelector(`.trip-controls`);
 const controlsElementHeaders = controlsElement.querySelectorAll(`h2`);
 const tripEventsElement = document.querySelector(`.trip-events`);
@@ -81,10 +85,15 @@ const calculateRoutePoints = (points) => {
     route: points.map((point) => point.city),
     month: `Mar`,
     startDate: `18`,
-    endDate: `21`
+    endDate: `21`,
   };
 };
 
+const calculateTotalPrice = (points) => {
+  return points.map((point) => point.ticketPrice).reduce((sum, current) => sum + current, 0);
+};
+
+tripPriceElement.textContent = calculateTotalPrice(initialCards);
 // 1) Создаём контейнер
 const createContainer = (template) => {
   const element = document.createElement(`template`);
@@ -145,3 +154,6 @@ const tripDaysContainer = createContainer(tripDaysContainerTemplate);
 renderElement(tripDaysContainer, tripDayContainer);
 renderElement(tripDayContainer, tripEventsListContainer);
 renderElement(tripEventsElement, tripDaysContainer);
+
+const startTimeElement = document.querySelector(`#event-start-time-1`);
+flatpickr(startTimeElement, {});
