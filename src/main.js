@@ -6,8 +6,8 @@ import {generateCardFilterButtonTemplate} from './components/card-filters.js';
 import {generateCardEditTemplate} from './components/card-edit.js';
 import {generateDayInfoTemplate} from './components/day-info.js';
 import {generateCardTemplate} from './components/card.js';
-//flatpickr
-import flatpickr from 'flatpickr';
+//  flatpickr
+// import flatpickr from 'flatpickr';
 
 const CARDS_COUNT = 4;
 const tripInfoElement = document.querySelector(`.trip-main__trip-info`);
@@ -88,12 +88,16 @@ const calculateRoutePoints = (points) => {
     endDate: `21`,
   };
 };
+// Получаем сумму билетом и доп. услуг
+const getTotalSum = (points) => {
+  const ticketsSum = points.map((point) => point.ticketPrice).reduce((sum, current) => sum + current, 0);
+  const offersSum = (points.map((point) => point.offers.map((offer) => offer.price).reduce((sum, current) => sum + current, 0)).reduce((sum, current) => sum + current, 0));
 
-const calculateTotalPrice = (points) => {
-  return points.map((point) => point.ticketPrice).reduce((sum, current) => sum + current, 0);
+  return ticketsSum + offersSum;
 };
 
-tripPriceElement.textContent = calculateTotalPrice(initialCards);
+tripPriceElement.textContent = getTotalSum(initialCards);
+
 // 1) Создаём контейнер
 const createContainer = (template) => {
   const element = document.createElement(`template`);
@@ -155,5 +159,5 @@ renderElement(tripDaysContainer, tripDayContainer);
 renderElement(tripDayContainer, tripEventsListContainer);
 renderElement(tripEventsElement, tripDaysContainer);
 
-const startTimeElement = document.querySelector(`#event-start-time-1`);
-flatpickr(startTimeElement, {});
+// const startTimeElement = document.querySelector(`#event-start-time-1`);
+// flatpickr(startTimeElement, {});
