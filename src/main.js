@@ -81,17 +81,30 @@ const initialCards = generateCards(CARDS_COUNT);
 
 // Получаем информацию о маршруте для хедера
 const calculateRoutePoints = (points) => {
+  let minDates = [];
+  let maxDates = [];
+
+  points.map(function (point) {
+    minDates.push(point.startDate);
+    maxDates.push(point.endDate);
+  });
+
+  const maxDate = new Date(Math.max.apply(null, maxDates));
+  const minDate = new Date(Math.min.apply(null, minDates));
+
   return {
     route: points.map((point) => point.city),
-    month: `Mar`,
-    startDate: `18`,
-    endDate: `21`,
+    startDate: minDate,
+    endDate: maxDate,
   };
 };
+
 // Получаем сумму билетом и доп. услуг
 const getTotalSum = (points) => {
   const ticketsSum = points.map((point) => point.ticketPrice).reduce((sum, current) => sum + current, 0);
-  const offersSum = (points.map((point) => point.offers.map((offer) => offer.price).reduce((sum, current) => sum + current, 0)).reduce((sum, current) => sum + current, 0));
+  const offersSum = (points.map((point) => point.offers.map((offer) => offer.price)
+    .reduce((sum, current) => sum + current, 0))
+    .reduce((sum, current) => sum + current, 0));
 
   return ticketsSum + offersSum;
 };

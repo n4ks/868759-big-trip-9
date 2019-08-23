@@ -1,6 +1,7 @@
-import {firstLetterToUppercase} from './util.js';
+import {firstLetterToUppercase, getTimeFromDate} from './util.js';
 
-export const generateCardEditTemplate = ({type, city, description, photos, ticketPrice, offers}) => {
+export const generateCardEditTemplate = ({type, city, description, photos, ticketPrice, offers, startDate, endDate}) => {
+
   const cardEditTemplate = `<li class="trip-events__item">
   <form class="event  event--edit" action="#" method="post">
     <header class="event__header">
@@ -88,12 +89,12 @@ export const generateCardEditTemplate = ({type, city, description, photos, ticke
         <label class="visually-hidden" for="event-start-time-1">
           From
         </label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="">
+        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getTimeFromDate(startDate)}">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">
           To
         </label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="">
+        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getTimeFromDate(endDate)}">
       </div>
 
       <div class="event__field-group  event__field-group--price">

@@ -12,9 +12,8 @@ export const generateCardsItems = () => ({
     `Nunc fermentum tortor ac porta dapibus.`,
     `In rutrum ac purus sit amet tempus.`].sort(() => mockHelper.getRandomSorting()).slice(0, mockHelper.getRandomNumber(3)).join(` `),
   photos: mockHelper.generateRandomPhotos(4),
-  timeFrom: `10:30`,
-  timeTo: `11:00`,
-  duration: `1H 30M`,
+  startDate: mockHelper.getStartDate(),
+  endDate: mockHelper.getRandomEndDate(0, 23),
   ticketPrice: mockHelper.getRandomNumber(160, 1),
   offers: [
     {
@@ -56,5 +55,18 @@ const mockHelper = {
   },
   getRandomSorting() {
     return Math.random() - 0.5;
+  },
+  getStartDate() {
+    return new Date(Date.now());
+  },
+  getRandomEndDate(startHour, endHour) {
+    const startDate = Date.now();
+    const endDate = new Date(Date.now());
+    endDate.setDate(endDate.getDate() + 15);
+    const date = new Date(+startDate + Math.random() * (endDate - startDate));
+    const hour = startHour + Math.random() * (endHour - startHour);
+    date.setHours(hour);
+
+    return date;
   }
 };
