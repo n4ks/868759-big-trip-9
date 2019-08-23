@@ -1,7 +1,7 @@
 import {firstLetterToUppercase, getTimeFromDate, calculateDuration} from './util.js';
 
 export const generateCardTemplate = ({type, city, startDate, endDate, ticketPrice, offers}) => {
-  console.log(endDate)
+
   const cardTemplate = `<li class="trip-events__item">
   <div class="event">
     <div class="event__type">
