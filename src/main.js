@@ -81,35 +81,23 @@ const initialCards = generateCards(CARDS_COUNT);
 
 // Получаем информацию о маршруте для хедера
 const calculateRoutePoints = (points) => {
-  let minDates = [];
-  let maxDates = [];
-
-  points.map(function (point) {
-    minDates.push(point.startDate);
-    maxDates.push(point.endDate);
-  });
-
-  const maxDate = new Date(Math.max.apply(null, maxDates));
-  const minDate = new Date(Math.min.apply(null, minDates));
+  const minDatePoint = points.reduce((current, next) => (current.startDate < next.startDate) ? current : next);
+  const maxDatePoint = points.reduce((current, next) => (current.endDate > next.endDate) ? current : next);
 
   return {
     route: points.map((point) => point.city),
-    startDate: minDate,
-    endDate: maxDate,
+    startDate: minDatePoint.startDate,
+    endDate: maxDatePoint.endDate,
   };
 };
 
-// Получаем сумму билетом и доп. услуг
-const getTotalSum = (points) => {
-  const ticketsSum = points.map((point) => point.ticketPrice).reduce((sum, current) => sum + current, 0);
-  const offersSum = (points.map((point) => point.offers.map((offer) => offer.price)
-    .reduce((sum, current) => sum + current, 0))
-    .reduce((sum, current) => sum + current, 0));
+// Получаем цену всех билетов и доп. услуг
+const getTicketsSum = (points) => points.map((point) => point.ticketPrice).reduce((sum, current) => sum + current);
+const getOffersSum = (points) => (points.map((point) => point.offers.map((offer) => offer.price)
+  .reduce((sum, current) => sum + current, 0))
+  .reduce((sum, current) => sum + current));
 
-  return ticketsSum + offersSum;
-};
-
-tripPriceElement.textContent = getTotalSum(initialCards);
+tripPriceElement.textContent = getTicketsSum(initialCards) + getOffersSum(initialCards);
 
 // 1) Создаём контейнер
 const createContainer = (template) => {

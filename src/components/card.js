@@ -1,4 +1,4 @@
-import {firstLetterToUppercase, getTimeFromDate, calculateDuration} from './util.js';
+import {capitalizeText, getTimeFromDate, calculateDuration} from './util.js';
 
 export const generateCardTemplate = ({type, city, startDate, endDate, ticketPrice, offers}) => {
 
@@ -7,7 +7,7 @@ export const generateCardTemplate = ({type, city, startDate, endDate, ticketPric
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
     </div>
-    <h3 class="event__title">${firstLetterToUppercase(type)} to ${city}</h3>
+    <h3 class="event__title">${capitalizeText(type)} to ${city}</h3>
 
     <div class="event__schedule">
       <p class="event__time">
