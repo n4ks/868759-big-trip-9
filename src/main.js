@@ -1,3 +1,4 @@
+import {generateCardsItems} from './components/data.js';
 import {generateTripInfoTemplate} from './components/trip-info.js';
 import {generateNavButtonTemplate} from './components/menu.js';
 import {generateFilterButtonTemplate} from './components/filters.js';
@@ -5,20 +6,16 @@ import {generateCardFilterButtonTemplate} from './components/card-filters.js';
 import {generateCardEditTemplate} from './components/card-edit.js';
 import {generateDayInfoTemplate} from './components/day-info.js';
 import {generateCardTemplate} from './components/card.js';
+//  flatpickr
+// import flatpickr from 'flatpickr';
 
-const CARDS_COUNT = 3;
+const CARDS_COUNT = 4;
 const tripInfoElement = document.querySelector(`.trip-main__trip-info`);
+const tripPriceElement = tripInfoElement.querySelector(`.trip-info__cost-value`);
+
 const controlsElement = document.querySelector(`.trip-controls`);
 const controlsElementHeaders = controlsElement.querySelectorAll(`h2`);
 const tripEventsElement = document.querySelector(`.trip-events`);
-
-const tripInfo = {
-  startPoint: `Amsterdam`,
-  endPoint: `Amsterdam`,
-  month: `Mar`,
-  startDate: `18`,
-  endDate: `21`
-};
 
 const navigationTemplate = `<nav class="trip-controls__trip-tabs  trip-tabs"></nav>`;
 const menuButtons = [
@@ -78,15 +75,29 @@ const dayInfo = {
   calendarDay: `18`
 };
 
-const cardInfo = {
-  type: `taxi`,
-  event: `Taxi to airport`,
-  timeFrom: `10:30`,
-  timeTo: `11:00`,
-  duration: `1H 30M`,
-  price: 20,
-  offer: `Order Uber`
+// Создаём точки маршрута
+const generateCards = (count) => new Array(count).fill(``).map(generateCardsItems);
+const initialCards = generateCards(CARDS_COUNT);
+
+// Получаем информацию о маршруте для хедера
+const calculateRoutePoints = (points) => {
+  const minDatePoint = points.reduce((current, next) => (current.startDate < next.startDate) ? current : next);
+  const maxDatePoint = points.reduce((current, next) => (current.endDate > next.endDate) ? current : next);
+
+  return {
+    route: points.map((point) => point.city),
+    startDate: minDatePoint.startDate,
+    endDate: maxDatePoint.endDate,
+  };
 };
+
+// Получаем цену всех билетов и доп. услуг
+const getTicketsSum = (points) => points.map((point) => point.ticketPrice).reduce((sum, current) => sum + current);
+const getOffersSum = (points) => (points.map((point) => point.offers.map((offer) => offer.price)
+  .reduce((sum, current) => sum + current, 0))
+  .reduce((sum, current) => sum + current));
+
+tripPriceElement.textContent = getTicketsSum(initialCards) + getOffersSum(initialCards);
 
 // 1) Создаём контейнер
 const createContainer = (template) => {
@@ -110,7 +121,7 @@ const renderElement = (container, element, position = `beforeEnd`) => {
 };
 
 // Информация о маршруте
-appendToContainer(tripInfoElement, generateTripInfoTemplate(tripInfo), `afterBegin`);
+appendToContainer(tripInfoElement, generateTripInfoTemplate(calculateRoutePoints(initialCards)), `afterBegin`);
 
 // 'Меню'
 const navigationContainer = createContainer(navigationTemplate);
@@ -139,12 +150,15 @@ appendToContainer(tripDayContainer, generateDayInfoTemplate(dayInfo));
 
 // 'Редактирование карточки'
 const tripEventsListContainer = createContainer(tripEventsListTemplate);
-appendToContainer(tripEventsListContainer, generateCardEditTemplate());
+appendToContainer(tripEventsListContainer, generateCardEditTemplate(initialCards.shift()));
 
-// 'Карточки'
-new Array(CARDS_COUNT).fill(``).forEach(() => appendToContainer(tripEventsListContainer, generateCardTemplate(cardInfo)));
+// Точки маршрута
+appendToContainer(tripEventsListContainer, initialCards.map(generateCardTemplate).join(``));
 
 const tripDaysContainer = createContainer(tripDaysContainerTemplate);
 renderElement(tripDaysContainer, tripDayContainer);
 renderElement(tripDayContainer, tripEventsListContainer);
 renderElement(tripEventsElement, tripDaysContainer);
+
+// const startTimeElement = document.querySelector(`#event-start-time-1`);
+// flatpickr(startTimeElement, {});
