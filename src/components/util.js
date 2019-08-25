@@ -1,6 +1,6 @@
 const capitalizeText = (word) => word.charAt(0).toUpperCase() + word.slice(1);
-
-const getTimeFromDate = (date) => `${date.getHours()}${`:`}${(date.getMinutes() < 10 ? `0` : ``)}${date.getMinutes()}`;
+const checkLeadZero = (value) => (value < 10 ? `0` : ``) + value;
+const getTimeFromDate = (date) => `${date.getHours()}${`:`}${(checkLeadZero(date.getMinutes()))}`;
 const getMonthAsString = (date) => date.toLocaleString(`en`, {month: `short`});
 const calculateDuration = (secondDate, firstDate) => {
   const res = Math.abs(secondDate - firstDate) / 1000;
@@ -8,16 +8,21 @@ const calculateDuration = (secondDate, firstDate) => {
   const hours = Math.floor(res / 3600) % 24;
   const minutes = Math.floor(res / 60) % 60;
 
-  switch (true) {
-    case !hours && !days:
-      return `${minutes}${`M`}`;
-    case !days:
-      return `${hours}${`H`} ${minutes}${`M`}`;
-    case days > 0:
-      return `${days}${`D`} ${hours}${`H`} ${minutes}${`M`}`;
-    default:
-      break;
+  const formattedDays = checkLeadZero(days);
+  const formattedHours = checkLeadZero(hours);
+  const formattedMinutes = checkLeadZero(minutes);
+  let result;
+
+  if (!days) {
+    result = `${formattedHours}${`H`} ${formattedMinutes}${`M`}`;
+    if (!hours) {
+      result = `${formattedMinutes}${`M`}`;
+    }
+  } else {
+    result = `${formattedDays}${`D`} ${formattedHours}${`H`} ${formattedMinutes}${`M`}`;
   }
+
+  return result;
 };
 
 export {capitalizeText, getTimeFromDate, getMonthAsString, calculateDuration};

@@ -62,7 +62,7 @@ const mockHelper = {
   getRandomEndDate(startHour, endHour) {
     const startDate = Date.now();
     const endDate = new Date(Date.now());
-    endDate.setDate(endDate.getDate() + 15);
+    endDate.setDate(endDate.getDate() + 1);
     const date = new Date(+startDate + Math.random() * (endDate - startDate));
     const hour = startHour + Math.random() * (endHour - startHour);
     date.setHours(hour);
