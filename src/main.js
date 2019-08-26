@@ -8,15 +8,20 @@ import DayInfo from './components/day-info.js';
 import Card from './components/card.js';
 // utils
 import {Position, createElement, render, unrender} from './components/util.js';
-//  flatpickr
-// import flatpickr from 'flatpickr';
 
 const CARDS_COUNT = 4;
+
 const tripInfoElement = document.querySelector(`.trip-main__trip-info`);
 const tripPriceElement = tripInfoElement.querySelector(`.trip-info__cost-value`);
 
 const controlsElement = document.querySelector(`.trip-controls`);
+
 const controlsElementHeaders = controlsElement.querySelectorAll(`h2`);
+const ControlsHeaders = {
+  FIRST: controlsElementHeaders[0],
+  SECOND: controlsElementHeaders[1]
+};
+
 const tripEventsElement = document.querySelector(`.trip-events`);
 
 const navigationTemplate = `<nav class="trip-controls__trip-tabs  trip-tabs"></nav>`;
@@ -121,7 +126,7 @@ const renderMenu = (menuData) => {
 };
 
 menuItems.forEach((menuItem) => renderMenu(menuItem));
-render(controlsElementHeaders[0], navigationContainer, Position.AFTER);
+render(ControlsHeaders.FIRST, navigationContainer, Position.AFTER);
 
 // 'Фильтры'
 const filtersContainer = createElement(filtersTemplate);
@@ -132,7 +137,7 @@ const renderFilters = (filtersData) => {
 };
 
 filterItems.forEach((filterItem) => renderFilters(filterItem));
-render(controlsElementHeaders[1], filtersContainer, Position.AFTER);
+render(ControlsHeaders.SECOND, filtersContainer, Position.AFTER);
 
 // 'Фильтр карточек'
 const cardFiltersContainer = createElement(cardFiltersTemplate);
@@ -169,7 +174,7 @@ const renderCard = (cardsData) => {
   const enablecardEditMode = () => card.getElement().replaceWith(cardEdit.getElement());
 
   const onEscKeyDown = (evt) => {
-    if (evt.keyCode === 27) {
+    if (evt.key === `Escape`) {
       enableCardMode();
       document.removeEventListener(`keydown`, onEscKeyDown);
     }
@@ -197,8 +202,8 @@ const renderCard = (cardsData) => {
     });
 
   cardEdit.getElement()
-  .querySelector(`.event__reset-btn`)
-  .addEventListener(`click`, onDeleteButtonClick);
+    .querySelector(`.event__reset-btn`)
+    .addEventListener(`click`, onDeleteButtonClick);
 
   render(tripEventsListContainer, card.getElement(cardsData));
 };
@@ -209,6 +214,3 @@ const tripDaysContainer = createElement(tripDaysContainerTemplate);
 render(tripDaysContainer, tripDayContainer);
 render(tripDayContainer, tripEventsListContainer);
 render(tripEventsElement, tripDaysContainer);
-
-// const startTimeElement = document.querySelector(`#event-start-time-1`);
-// flatpickr(startTimeElement, {});
