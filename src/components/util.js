@@ -1,3 +1,42 @@
+const Position = {
+  BEFORE_END: `beforeEnd`,
+  AFTER_BEGIN: `afterBegin`,
+  AFTER: `after`,
+  BEFORE: `before`
+};
+
+const createElement = (template) => {
+  const element = document.createElement(`template`);
+  element.innerHTML = template.trim();
+
+  return element.content.firstChild;
+};
+
+const render = (container, element, position = Position.BEFORE_END) => {
+  // Если контейнер содержит несколько элементов обёрнутых в template -> передаём в DOM .content
+  const summaryElement = element.content ? element.content : element;
+  switch (position) {
+    case Position.AFTER_BEGIN:
+      container.prepend(summaryElement);
+      break;
+    case Position.BEFORE_END:
+      container.append(summaryElement);
+      break;
+    case Position.AFTER:
+      container.after(summaryElement);
+      break;
+    case Position.BEFORE:
+      container.before(summaryElement);
+      break;
+  }
+};
+
+const unrender = (element) => {
+  if (element) {
+    element.remove();
+  }
+};
+
 const capitalizeText = (word) => word.charAt(0).toUpperCase() + word.slice(1);
 const checkLeadZero = (value) => (value < 10 ? `0` : ``) + value;
 const getTimeFromDate = (date) => `${date.getHours()}${`:`}${(checkLeadZero(date.getMinutes()))}`;
@@ -25,4 +64,4 @@ const calculateDuration = (secondDate, firstDate) => {
   return result;
 };
 
-export {capitalizeText, getTimeFromDate, getMonthAsString, calculateDuration};
+export {Position, createElement, render, unrender, capitalizeText, getTimeFromDate, getMonthAsString, calculateDuration};
