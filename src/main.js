@@ -7,7 +7,7 @@ import CardEdit from './components/card-edit.js';
 import DayInfo from './components/day-info.js';
 import Card from './components/card.js';
 // utils
-import {Position, createElement, render} from './components/util.js';
+import {Position, createElement, render, unrender} from './components/util.js';
 //  flatpickr
 // import flatpickr from 'flatpickr';
 
@@ -159,32 +159,51 @@ const renderDayInfo = (dayInfoData) => {
 
 renderDayInfo(dayInfoItems);
 
-// 'Редактирование карточки'
-const tripEventsListContainer = createElement(tripEventsListTemplate);
-// appendToContainer(tripEventsListContainer, generateCardEditTemplate(initialCards.shift()));
-
 // Точки маршрута
+const tripEventsListContainer = createElement(tripEventsListTemplate);
 const renderCard = (cardsData) => {
   const card = new Card(cardsData);
   const cardEdit = new CardEdit(cardsData);
 
+  const enableCardMode = () => cardEdit.getElement().replaceWith(card.getElement());
+  const enablecardEditMode = () => card.getElement().replaceWith(cardEdit.getElement());
+
+  const onEscKeyDown = (evt) => {
+    if (evt.keyCode === 27) {
+      enableCardMode();
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
+
+  const onDeleteButtonClick = () => {
+    unrender(cardEdit.getElement());
+    unrender(card.getElement());
+    cardEdit.removeElement();
+    card.removeElement();
+    cardEdit.getElement().querySelector(`.event__reset-btn`).removeEventListener(`click`, onDeleteButtonClick);
+  };
+
   card.getElement()
     .querySelector(`.event__rollup-btn`)
     .addEventListener(`click`, () => {
-      card.getElement().replaceWith(cardEdit.getElement());
+      enablecardEditMode();
+      document.addEventListener(`keydown`, onEscKeyDown);
     });
 
   cardEdit.getElement()
     .querySelector(`.event__save-btn`)
     .addEventListener(`click`, () => {
-      cardEdit.getElement().replaceWith(card.getElement());
+      enableCardMode();
     });
+
+  cardEdit.getElement()
+  .querySelector(`.event__reset-btn`)
+  .addEventListener(`click`, onDeleteButtonClick);
 
   render(tripEventsListContainer, card.getElement(cardsData));
 };
 
 initialCards.forEach((initialCard) => renderCard(initialCard));
-// appendToContainer(tripEventsListContainer, initialCards.map(generateCardTemplate).join(``));
 
 const tripDaysContainer = createElement(tripDaysContainerTemplate);
 render(tripDaysContainer, tripDayContainer);
