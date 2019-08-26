@@ -1,11 +1,13 @@
 import {generateCardsItems} from './components/data.js';
-import {generateTripInfoTemplate} from './components/trip-info.js';
-import {generateNavButtonTemplate} from './components/menu.js';
-import {generateFilterButtonTemplate} from './components/filters.js';
-import {generateCardFilterButtonTemplate} from './components/card-filters.js';
-import {generateCardEditTemplate} from './components/card-edit.js';
-import {generateDayInfoTemplate} from './components/day-info.js';
-import {generateCardTemplate} from './components/card.js';
+import TripInfo from './components/trip-info.js';
+import Menu from './components/menu.js';
+import Filter from './components/filters.js';
+import CardFilter from './components/card-filters.js';
+import CardEdit from './components/card-edit.js';
+import DayInfo from './components/day-info.js';
+import Card from './components/card.js';
+// utils
+import {Position, createElement, render} from './components/util.js';
 //  flatpickr
 // import flatpickr from 'flatpickr';
 
@@ -18,7 +20,7 @@ const controlsElementHeaders = controlsElement.querySelectorAll(`h2`);
 const tripEventsElement = document.querySelector(`.trip-events`);
 
 const navigationTemplate = `<nav class="trip-controls__trip-tabs  trip-tabs"></nav>`;
-const menuButtons = [
+const menuItems = [
   {
     label: `Table`,
     extraClass: ` trip-tabs__btn--active`
@@ -28,7 +30,7 @@ const menuButtons = [
   }
 ];
 
-const filterButtons = [
+const filterItems = [
   {
     label: `everything`,
     isChecked: true
@@ -50,7 +52,7 @@ const cardFiltersTemplate = `<form class="trip-events__trip-sort  trip-sort" act
     <span class="trip-sort__item  trip-sort__item--offers">Offers</span>
   </form>`;
 
-const cardFiltersButtons = [
+const cardFiltersItems = [
   {
     label: `event`,
     isChecked: true
@@ -69,7 +71,7 @@ const tripDaysContainerTemplate = `<ul class="trip-days"></ul>`;
 const tripDayContainerTemplate = `<li class="trip-days__item  day">`;
 const tripEventsListTemplate = `<ul class="trip-events__list"></ul>`;
 
-const dayInfo = {
+const dayInfoItems = {
   dayNumber: 1,
   month: `Mar`,
   calendarDay: `18`
@@ -79,7 +81,7 @@ const dayInfo = {
 const generateCards = (count) => new Array(count).fill(``).map(generateCardsItems);
 const initialCards = generateCards(CARDS_COUNT);
 
-// Получаем информацию о маршруте для хедера
+// Получаем информацию о маршруте для TripInfo
 const calculateRoutePoints = (points) => {
   const minDatePoint = points.reduce((current, next) => (current.startDate < next.startDate) ? current : next);
   const maxDatePoint = points.reduce((current, next) => (current.endDate > next.endDate) ? current : next);
@@ -91,6 +93,8 @@ const calculateRoutePoints = (points) => {
   };
 };
 
+const routePoints = calculateRoutePoints(initialCards);
+
 // Получаем цену всех билетов и доп. услуг
 const getTicketsSum = (points) => points.map((point) => point.ticketPrice).reduce((sum, current) => sum + current);
 const getOffersSum = (points) => (points.map((point) => point.offers.map((offer) => offer.price)
@@ -99,66 +103,93 @@ const getOffersSum = (points) => (points.map((point) => point.offers.map((offer)
 
 tripPriceElement.textContent = getTicketsSum(initialCards) + getOffersSum(initialCards);
 
-// 1) Создаём контейнер
-const createContainer = (template) => {
-  const element = document.createElement(`template`);
-
-  element.innerHTML = template.trim();
-
-  return element.content.firstChild;
-};
-
-// 2) Заполняем контейнер
-const appendToContainer = (container, template, position = `beforeEnd`) => {
-  container.insertAdjacentHTML(position, template);
-
-  return container;
-};
-
-// 3) Рендерим в DOM
-const renderElement = (container, element, position = `beforeEnd`) => {
-  container.insertAdjacentElement(position, element);
-};
-
 // Информация о маршруте
-appendToContainer(tripInfoElement, generateTripInfoTemplate(calculateRoutePoints(initialCards)), `afterBegin`);
+const renderTripInfo = (tripInfoData) => {
+  const tripInfo = new TripInfo(tripInfoData);
+
+  render(tripInfoElement, tripInfo.getElement(), Position.AFTER_BEGIN);
+};
+
+renderTripInfo(routePoints);
 
 // 'Меню'
-const navigationContainer = createContainer(navigationTemplate);
+const navigationContainer = createElement(navigationTemplate);
+const renderMenu = (menuData) => {
+  const menu = new Menu(menuData);
 
-appendToContainer(navigationContainer, generateNavButtonTemplate(menuButtons));
-renderElement(controlsElementHeaders[0], navigationContainer, `afterEnd`);
+  render(navigationContainer, menu.getElement());
+};
+
+menuItems.forEach((menuItem) => renderMenu(menuItem));
+render(controlsElementHeaders[0], navigationContainer, Position.AFTER);
 
 // 'Фильтры'
-const filtersContainer = createContainer(filtersTemplate);
+const filtersContainer = createElement(filtersTemplate);
+const renderFilters = (filtersData) => {
+  const filter = new Filter(filtersData);
 
-appendToContainer(filtersContainer, generateFilterButtonTemplate(filterButtons));
-renderElement(controlsElementHeaders[1], filtersContainer, `afterEnd`);
+  render(filtersContainer, filter.getElement());
+};
+
+filterItems.forEach((filterItem) => renderFilters(filterItem));
+render(controlsElementHeaders[1], filtersContainer, Position.AFTER);
 
 // 'Фильтр карточек'
-const cardFiltersContainer = createContainer(cardFiltersTemplate);
-const cardFiltersDecorativeElements = cardFiltersContainer.querySelectorAll(`span`);
+const cardFiltersContainer = createElement(cardFiltersTemplate);
+const cardFiltersOffers = cardFiltersContainer.querySelector(`.trip-sort__item--offers`);
 
-appendToContainer(cardFiltersDecorativeElements[0], generateCardFilterButtonTemplate(cardFiltersButtons), `afterEnd`);
-renderElement(tripEventsElement, cardFiltersContainer);
+const renderCardFilters = (cardFiltersData) => {
+  const cardFilter = new CardFilter(cardFiltersData);
+
+  render(cardFiltersOffers, cardFilter.getElement(), Position.BEFORE);
+};
+
+cardFiltersItems.forEach((cardFilterItem) => renderCardFilters(cardFilterItem));
+render(tripEventsElement, cardFiltersContainer);
 
 // // Контейнер для информации о дне и списка точек маршрута
-const tripDayContainer = createContainer(tripDayContainerTemplate);
+const tripDayContainer = createElement(tripDayContainerTemplate);
 
 // // Информация о дне
-appendToContainer(tripDayContainer, generateDayInfoTemplate(dayInfo));
+const renderDayInfo = (dayInfoData) => {
+  const dayInfo = new DayInfo(dayInfoData);
+
+  render(tripDayContainer, dayInfo.getElement(dayInfoData));
+};
+
+renderDayInfo(dayInfoItems);
 
 // 'Редактирование карточки'
-const tripEventsListContainer = createContainer(tripEventsListTemplate);
-appendToContainer(tripEventsListContainer, generateCardEditTemplate(initialCards.shift()));
+const tripEventsListContainer = createElement(tripEventsListTemplate);
+// appendToContainer(tripEventsListContainer, generateCardEditTemplate(initialCards.shift()));
 
 // Точки маршрута
-appendToContainer(tripEventsListContainer, initialCards.map(generateCardTemplate).join(``));
+const renderCard = (cardsData) => {
+  const card = new Card(cardsData);
+  const cardEdit = new CardEdit(cardsData);
 
-const tripDaysContainer = createContainer(tripDaysContainerTemplate);
-renderElement(tripDaysContainer, tripDayContainer);
-renderElement(tripDayContainer, tripEventsListContainer);
-renderElement(tripEventsElement, tripDaysContainer);
+  card.getElement()
+    .querySelector(`.event__rollup-btn`)
+    .addEventListener(`click`, () => {
+      card.getElement().replaceWith(cardEdit.getElement());
+    });
+
+  cardEdit.getElement()
+    .querySelector(`.event__save-btn`)
+    .addEventListener(`click`, () => {
+      cardEdit.getElement().replaceWith(card.getElement());
+    });
+
+  render(tripEventsListContainer, card.getElement(cardsData));
+};
+
+initialCards.forEach((initialCard) => renderCard(initialCard));
+// appendToContainer(tripEventsListContainer, initialCards.map(generateCardTemplate).join(``));
+
+const tripDaysContainer = createElement(tripDaysContainerTemplate);
+render(tripDaysContainer, tripDayContainer);
+render(tripDayContainer, tripEventsListContainer);
+render(tripEventsElement, tripDaysContainer);
 
 // const startTimeElement = document.querySelector(`#event-start-time-1`);
 // flatpickr(startTimeElement, {});
