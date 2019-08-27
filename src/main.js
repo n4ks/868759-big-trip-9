@@ -75,6 +75,7 @@ const cardFiltersItems = [
 const tripDaysContainerTemplate = `<ul class="trip-days"></ul>`;
 const tripDayContainerTemplate = `<li class="trip-days__item  day">`;
 const tripEventsListTemplate = `<ul class="trip-events__list"></ul>`;
+const noPointsTemplate = `<p class="trip-events__msg">Click New Event to create your first point</p>`;
 
 const dayInfoItems = {
   dayNumber: 1,
@@ -164,6 +165,25 @@ const renderDayInfo = (dayInfoData) => {
 
 renderDayInfo(dayInfoItems);
 
+const renderNoPoints = () => {
+  const noPointsElement = createElement(noPointsTemplate);
+
+  render(tripEventsElement, noPointsElement);
+};
+
+const checkPointsCount = () => {
+  const tripEventsList = document.querySelector(`.trip-events__list`);
+  if (tripEventsList.childElementCount === 0) {
+    const cardFilters = document.querySelector(`.trip-events__trip-sort`);
+    const tripDaysElement = document.querySelector(`.trip-days`);
+
+    unrender(cardFilters);
+    unrender(tripDaysElement);
+
+    renderNoPoints();
+  }
+};
+
 // Точки маршрута
 const tripEventsListContainer = createElement(tripEventsListTemplate);
 const renderCard = (cardsData) => {
@@ -186,6 +206,7 @@ const renderCard = (cardsData) => {
     cardEdit.removeElement();
     card.removeElement();
     cardEdit.getElement().querySelector(`.event__reset-btn`).removeEventListener(`click`, onDeleteButtonClick);
+    checkPointsCount();
   };
 
   card.getElement()
