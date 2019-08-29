@@ -13,20 +13,19 @@ const createElement = (template) => {
 };
 
 const render = (container, element, position = Position.BEFORE_END) => {
-  // Если контейнер содержит несколько элементов обёрнутых в template -> передаём в DOM .content
-  const summaryElement = element.content ? element.content : element;
+
   switch (position) {
     case Position.AFTER_BEGIN:
-      container.prepend(summaryElement);
+      container.prepend(element);
       break;
     case Position.BEFORE_END:
-      container.append(summaryElement);
+      container.append(element);
       break;
     case Position.AFTER:
-      container.after(summaryElement);
+      container.after(element);
       break;
     case Position.BEFORE:
-      container.before(summaryElement);
+      container.before(element);
       break;
   }
 };

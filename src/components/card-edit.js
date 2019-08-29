@@ -1,7 +1,9 @@
-import {createElement, capitalizeText, getTimeFromDate} from './util.js';
+import AbstractComponent from './abstract-component.js';
+import {capitalizeText, getTimeFromDate} from './util.js';
 
-export default class CardEdit {
+export default class CardEdit extends AbstractComponent {
   constructor({type, city, description, photos, ticketPrice, offers, startDate, endDate}) {
+    super();
     this._type = type;
     this._city = city;
     this._description = description;
@@ -10,26 +12,10 @@ export default class CardEdit {
     this._offers = offers;
     this._startDate = startDate;
     this._endDate = endDate;
-    this._element = null;
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    if (this._element) {
-      this._element = null;
-    }
   }
 
   getTemplate() {
-
-    const cardEditTemplate = `<li class="trip-events__item">
+    return `<li class="trip-events__item">
     <form class="event  event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
@@ -177,7 +163,5 @@ export default class CardEdit {
       </section >
     </form >
   </li > `;
-
-    return cardEditTemplate;
   }
 }
