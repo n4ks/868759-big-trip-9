@@ -1,32 +1,19 @@
-import {createElement, capitalizeText, getTimeFromDate, calculateDuration} from './util.js';
+import AbstractComponent from './abstract-component.js';
+import {capitalizeText, getTimeFromDate, calculateDuration} from './util.js';
 
-export default class Card {
+export default class Card extends AbstractComponent {
   constructor({type, city, startDate, endDate, ticketPrice, offers}) {
+    super();
     this._type = type;
     this._city = city;
     this._startDate = startDate;
     this._endDate = endDate;
     this._ticketPrice = ticketPrice;
     this._offers = offers;
-    this._element = null;
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    if (this._element) {
-      this._element = null;
-    }
   }
 
   getTemplate() {
-    const cardTemplate = `<li class="trip-events__item">
+    return `<li class="trip-events__item">
   <div class="event">
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="img/icons/${this._type}.png" alt="Event type icon">
@@ -60,8 +47,6 @@ export default class Card {
     </button>
   </div>
 </li>`;
-
-    return cardTemplate;
   }
 }
 
