@@ -2,13 +2,9 @@ import {generateCardsItems} from './components/data.js';
 import TripInfo from './components/trip-info.js';
 import Menu from './components/menu.js';
 import Filter from './components/filters.js';
-// import CardFilter from './components/card-filters.js';
-// import CardEdit from './components/card-edit.js';
-// import DayInfo from './components/day-info.js';
-// import Card from './components/card.js';
 import TripController from './controllers/trip.js';
 // utils
-import {Position, createElement, render} from './components/util.js';
+import {Position, createElement, render, getMinMaxDate, DatesOperationType} from './components/util.js';
 
 const CARDS_COUNT = 4;
 
@@ -71,26 +67,22 @@ const cardFiltersItems = [
   }
 ];
 
-const dayInfoItems = [
-  {
-    dayNumber: 1,
-    month: `Mar`,
-    calendarDay: `18`
-  }];
-
 // Создаём точки маршрута
 const generateCards = (count) => new Array(count).fill(``).map(generateCardsItems);
 const cardsMock = generateCards(CARDS_COUNT);
 
+const dayInfoItems = [
+  {
+    dayNumber: 1,
+    date: getMinMaxDate(cardsMock, DatesOperationType.STARTDATE_MIN)
+  }];
+
 // Получаем информацию о маршруте для TripInfo
 const calculateRoutePoints = (points) => {
-  const minDatePoint = points.reduce((current, next) => (current.startDate < next.startDate) ? current : next);
-  const maxDatePoint = points.reduce((current, next) => (current.endDate > next.endDate) ? current : next);
-
   return {
     route: points.map((point) => point.city),
-    startDate: minDatePoint.startDate,
-    endDate: maxDatePoint.endDate,
+    startDate: getMinMaxDate(cardsMock, DatesOperationType.STARTDATE_MIN),
+    endDate: getMinMaxDate(cardsMock, DatesOperationType.ENDDATE_MAX),
   };
 };
 

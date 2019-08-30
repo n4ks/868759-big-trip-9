@@ -50,23 +50,18 @@ export default class TripController {
     const filterComponent = new Filter(filter);
 
     const onSortLinkClick = (evt) => {
-      // evt.preventDefault();
 
       if (evt.target.tagName !== `LABEL`) {
         return;
       }
-      // Проверяем кол-во задач в конейнере для настройки фильтра
-      // let filteredTasks = (this._checkTasksCount() === TaskCount.MINIMUM) ? this._tasks.slice(...TaskCount.INIT_RENDER) : this._tasks;
-      console.log(this._generatedCardsData)
+
       switch (evt.target.dataset.sortType) {
         case `price`:
           const sortedByPrice = this._generatedCardsData.slice().sort((a, b) => a.instance._ticketPrice - b.instance._ticketPrice);
-          // console.log(sortedByPrice)
           this._renderCards(sortedByPrice);
           break;
         case `time`:
           const sortedByTime = this._generatedCardsData.slice().sort((a, b) => a.instance._startDate - b.instance._startDate);
-          console.log(sortedByTime)
           this._renderCards(sortedByTime);
           break;
         case `default`:
@@ -95,6 +90,13 @@ export default class TripController {
   _renderDayInfo() {
     this._tripDay.getElement().append(...this._generatedDayInfoData.map((instance) => instance.element));
   }
+
+  // Удаление объекта из массива сгенерированных данных
+  _removeGeneratedComponent(generatedArray, component) {
+    const elementIndex = generatedArray.findIndex((currentElement) => currentElement.instance === component);
+    generatedArray.splice(elementIndex, 1);
+  }
+
   _generateCard(card) {
     const cardComponent = new TripCard(card);
     const cardEditComponent = new TripCardEdit(card);
@@ -110,6 +112,9 @@ export default class TripController {
     };
 
     const onDeleteButtonClick = () => {
+      this._removeGeneratedComponent(this._generatedCardsData, cardComponent);
+      this._removeGeneratedComponent(this._generatedEditCardsData, cardEditComponent);
+
       unrender(cardEditComponent.getElement());
       unrender(cardComponent.getElement());
       cardEditComponent.removeElement();
@@ -120,9 +125,7 @@ export default class TripController {
 
       if (!this._checkPointsCount()) {
         this._clearTripRoute();
-        this._renderNoCards();
       }
-
     };
 
     cardComponent.getElement()
@@ -147,7 +150,6 @@ export default class TripController {
   }
 
   _renderCards(cardsData = this._generatedCardsData) {
-    // FIXME: очистить перед рендером? (фильтры)
     this._tripList.getElement().append(...cardsData.map((instance) => instance.element));
   }
 
@@ -167,6 +169,8 @@ export default class TripController {
     this._clearData(this._generatedDayInfoData);
     this._clearData(this._generatedCardsData);
     this._clearData(this._generatedEditCardsData);
+
+    this._renderNoCards();
   }
 
   _clearData(data) {

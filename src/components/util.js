@@ -5,6 +5,11 @@ const Position = {
   BEFORE: `before`
 };
 
+const DatesOperationType = {
+  STARTDATE_MIN: `min`,
+  ENDDATE_MAX: `max`
+};
+
 const createElement = (template) => {
   const element = document.createElement(`template`);
   element.innerHTML = template.trim();
@@ -63,4 +68,15 @@ const calculateDuration = (secondDate, firstDate) => {
   return result;
 };
 
-export {Position, createElement, render, unrender, capitalizeText, getTimeFromDate, getMonthAsString, calculateDuration};
+const getMinMaxDate = (points, type) => {
+  let result;
+  if (type === DatesOperationType.STARTDATE_MIN) {
+    result = points.reduce((current, next) => (current.startDate < next.startDate) ? current : next).startDate;
+  } else if (type === DatesOperationType.ENDDATE_MAX) {
+    result = points.reduce((current, next) => (current.endDate > next.endDate) ? current : next).endDate;
+  }
+
+  return result;
+};
+
+export {Position, createElement, render, unrender, capitalizeText, getTimeFromDate, getMonthAsString, calculateDuration, getMinMaxDate, DatesOperationType};
