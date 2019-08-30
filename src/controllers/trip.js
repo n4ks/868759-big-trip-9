@@ -25,7 +25,7 @@ export default class TripController {
     this._generatedCardsData = [];
     this._generatedEditCardsData = [];
   }
-
+  // FIXME: При удалении карточки удалять объект из массива _generatedCards/EditCards
   init() {
     // Фильтры точек маршрута
     this._filters.forEach((filter) => this._generateFilter(filter));
@@ -48,7 +48,33 @@ export default class TripController {
 
   _generateFilter(filter) {
     const filterComponent = new Filter(filter);
-    // FIXME: логика фильтрации
+
+    const onSortLinkClick = (evt) => {
+      // evt.preventDefault();
+
+      if (evt.target.tagName !== `LABEL`) {
+        return;
+      }
+      // Проверяем кол-во задач в конейнере для настройки фильтра
+      // let filteredTasks = (this._checkTasksCount() === TaskCount.MINIMUM) ? this._tasks.slice(...TaskCount.INIT_RENDER) : this._tasks;
+      console.log(this._generatedCardsData)
+      switch (evt.target.dataset.sortType) {
+        case `price`:
+          const sortedByPrice = this._generatedCardsData.slice().sort((a, b) => a.instance._ticketPrice - b.instance._ticketPrice);
+          // console.log(sortedByPrice)
+          this._renderCards(sortedByPrice);
+          break;
+        case `time`:
+          const sortedByTime = this._generatedCardsData.slice().sort((a, b) => a.instance._startDate - b.instance._startDate);
+          console.log(sortedByTime)
+          this._renderCards(sortedByTime);
+          break;
+        case `default`:
+          this._renderCards();
+          break;
+      }
+    };
+    filterComponent.getElement().addEventListener(`click`, onSortLinkClick);
 
     this._createDataStore(this._generatedFiltersData, filterComponent);
   }
@@ -91,7 +117,12 @@ export default class TripController {
 
       cardEditComponent.getElement().querySelector(`.event__reset-btn`)
         .removeEventListener(`click`, onDeleteButtonClick);
-      this._renderNoCards();
+
+      if (!this._checkPointsCount()) {
+        this._clearTripRoute();
+        this._renderNoCards();
+      }
+
     };
 
     cardComponent.getElement()
@@ -115,8 +146,9 @@ export default class TripController {
     this._createDataStore(this._generatedEditCardsData, cardEditComponent);
   }
 
-  _renderCards() {
-    this._tripList.getElement().append(...this._generatedCardsData.map((instance) => instance.element));
+  _renderCards(cardsData = this._generatedCardsData) {
+    // FIXME: очистить перед рендером? (фильтры)
+    this._tripList.getElement().append(...cardsData.map((instance) => instance.element));
   }
 
   _checkPointsCount() {
@@ -126,18 +158,15 @@ export default class TripController {
   }
 
   _clearTripRoute() {
-    if (!this._checkPointsCount()) {
-      const cardFilters = document.querySelector(`.trip-events__trip-sort`);
-      const tripDaysElement = document.querySelector(`.trip-days`);
+    const cardFilters = document.querySelector(`.trip-events__trip-sort`);
+    const tripDaysElement = document.querySelector(`.trip-days`);
 
-      unrender(cardFilters);
-      unrender(tripDaysElement);
-      this._clearData(this._generatedFiltersData);
-      this._clearData(this._generatedDayInfoData);
-      this._clearData(this._generatedCardsData);
-      this._clearData(this._generatedEditCardsData);
-      // renderNoPoints();
-    }
+    unrender(cardFilters);
+    unrender(tripDaysElement);
+    this._clearData(this._generatedFiltersData);
+    this._clearData(this._generatedDayInfoData);
+    this._clearData(this._generatedCardsData);
+    this._clearData(this._generatedEditCardsData);
   }
 
   _clearData(data) {
@@ -152,7 +181,6 @@ export default class TripController {
   }
 
   _renderNoCards() {
-    this._clearTripRoute();
     render(this._container, this._noCards.getElement());
   }
 }

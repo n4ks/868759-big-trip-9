@@ -56,22 +56,20 @@ const filtersTemplate = `<form class="trip-filters" action="#" method="get"></fo
 const cardFiltersItems = [
   {
     label: `event`,
+    dataSortType: `default`,
     isChecked: true
   },
   {
     label: `time`,
+    dataSortType: `time`,
     isChecked: false
   },
   {
     label: `price`,
+    dataSortType: `price`,
     isChecked: false
   }
 ];
-
-const tripDaysContainerTemplate = `<ul class="trip-days"></ul>`;
-const tripDayContainerTemplate = `<li class="trip-days__item  day">`;
-const tripEventsListTemplate = `<ul class="trip-events__list"></ul>`;
-const noPointsTemplate = `<p class="trip-events__msg">Click New Event to create your first point</p>`;
 
 const dayInfoItems = [
   {
@@ -139,88 +137,3 @@ render(ControlsHeaders.SECOND, filtersContainer, Position.AFTER);
 
 const tripController = new TripController(tripEventsElement, cardFiltersItems, dayInfoItems, cardsMock);
 tripController.init();
-
-// 'Фильтр карточек'
-
-// // Контейнер для информации о дне и списка точек маршрута
-// const tripDayContainer = createElement(tripDayContainerTemplate);
-
-// // // Информация о дне
-// const renderDayInfo = (dayInfoData) => {
-//   const dayInfo = new DayInfo(dayInfoData);
-
-//   render(tripDayContainer, dayInfo.getElement(dayInfoData));
-// };
-
-// renderDayInfo(dayInfoItems);
-
-// const renderNoPoints = () => {
-//   const noPointsElement = createElement(noPointsTemplate);
-
-//   render(tripEventsElement, noPointsElement);
-// };
-
-// const checkPointsCount = () => {
-//   const tripEventsList = document.querySelector(`.trip-events__list`);
-//   if (tripEventsList.childElementCount === 0) {
-//     const cardFilters = document.querySelector(`.trip-events__trip-sort`);
-//     const tripDaysElement = document.querySelector(`.trip-days`);
-
-//     unrender(cardFilters);
-//     unrender(tripDaysElement);
-
-//     renderNoPoints();
-//   }
-// };
-
-// // Точки маршрута
-// const tripEventsListContainer = createElement(tripEventsListTemplate);
-// const renderCard = (cardsData) => {
-//   const card = new Card(cardsData);
-//   const cardEdit = new CardEdit(cardsData);
-
-//   const enableCardMode = () => cardEdit.getElement().replaceWith(card.getElement());
-//   const enablecardEditMode = () => card.getElement().replaceWith(cardEdit.getElement());
-
-//   const onEscKeyDown = (evt) => {
-//     if (evt.key === `Escape`) {
-//       enableCardMode();
-//       document.removeEventListener(`keydown`, onEscKeyDown);
-//     }
-//   };
-
-//   const onDeleteButtonClick = () => {
-//     unrender(cardEdit.getElement());
-//     unrender(card.getElement());
-//     cardEdit.removeElement();
-//     card.removeElement();
-//     cardEdit.getElement().querySelector(`.event__reset-btn`).removeEventListener(`click`, onDeleteButtonClick);
-//     checkPointsCount();
-//   };
-
-//   card.getElement()
-//     .querySelector(`.event__rollup-btn`)
-//     .addEventListener(`click`, () => {
-//       enablecardEditMode();
-//       document.addEventListener(`keydown`, onEscKeyDown);
-//     });
-
-//   cardEdit.getElement()
-//     .querySelector(`.event__save-btn`)
-//     .addEventListener(`click`, () => {
-//       enableCardMode();
-//     });
-
-//   cardEdit.getElement()
-//     .querySelector(`.event__reset-btn`)
-//     .addEventListener(`click`, onDeleteButtonClick);
-
-//   render(tripEventsListContainer, card.getElement(cardsData));
-// };
-
-// initialCards.forEach((initialCard) => renderCard(initialCard));
-
-// const tripDaysContainer = createElement(tripDaysContainerTemplate);
-// render(tripDaysContainer, tripDayContainer);
-// render(tripDayContainer, tripEventsListContainer);
-// render(tripEventsElement, tripDaysContainer);
