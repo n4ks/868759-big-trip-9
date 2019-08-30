@@ -7,7 +7,7 @@ import TripList from '../components/trip-list.js';
 import TripCard from '../components/card.js';
 import TripCardEdit from '../components/card-edit.js';
 import NoCards from '../components/no-cards.js';
-import {render, unrender, Position} from '../components/util.js';
+import {render, unrender} from '../components/util.js';
 
 export default class TripController {
   constructor(container, filters, dayInfos, cards) {
@@ -19,6 +19,7 @@ export default class TripController {
     this._dayInfos = dayInfos;
     this._tripList = new TripList();
     this._cards = cards;
+    this._noCards = new NoCards();
     this._generatedFiltersData = [];
     this._generatedDayInfoData = [];
     this._generatedCardsData = [];
@@ -26,46 +27,48 @@ export default class TripController {
   }
 
   init() {
-    // Фильтры
-    // this._filters.forEach((filter) => this._renderFilter(filter));
-    // render(this._container, this._filtersContainer.getElement());
+    // Фильтры точек маршрута
+    this._filters.forEach((filter) => this._generateFilter(filter));
+    this._renderFilter();
 
-    // dayInfo -> tripDay
-    this._dayInfos.forEach((dayInfo) => this._renderDayInfo(dayInfo));
+    // Информация о глобальной точке маршрута
+    this._dayInfos.forEach((dayInfo) => this._generateDayInfo(dayInfo));
+    this._renderDayInfo();
 
-    // cards -> tripList
+    // Точки маршрута
     this._cards.forEach((card) => this._generateCard(card));
-    this._tripList.getElement().append(...this._generatedCardsData.map((instance) => instance.element));
+    this._renderCards();
 
-    // tripList -> tripDday
+    // Заполнение контейнеров и рендер
+    render(this._container, this._filtersContainer.getElement());
     render(this._tripDay.getElement(), this._tripList.getElement());
-
-    // tripDay -> tripDays
     render(this._tripDays.getElement(), this._tripDay.getElement());
-
-    // trip-days -> container
     render(this._container, this._tripDays.getElement());
   }
 
-  // _renderFilter(filter) {
-  //   const filterComponent = new Filter(filter);
-  //   // FIXME: логика фильтрации
+  _generateFilter(filter) {
+    const filterComponent = new Filter(filter);
+    // FIXME: логика фильтрации
 
-  //   const filterOffers = this._filtersContainer.getElement()
-  //     .querySelector(`.trip-sort__item--offers`);
+    this._createDataStore(this._generatedFiltersData, filterComponent);
+  }
 
-  //   this._generatedFilters.push(filterComponent);
-  //   this._generatedFiltersElements.push(filterComponent.getElement());
-  //   render(filterOffers, filterComponent.getElement(), Position.BEFORE);
-  // }
+  _renderFilter() {
+    const filterOffers = this._filtersContainer.getElement()
+      .querySelector(`.trip-sort__item--offers`);
 
-  _renderDayInfo(info) {
+    filterOffers.before(...this._generatedFiltersData.map((instance) => instance.element));
+  }
+
+  _generateDayInfo(info) {
     const dayInfoComponent = new DayInfo(info);
 
     this._createDataStore(this._generatedDayInfoData, dayInfoComponent);
-    render(this._tripDay.getElement(), dayInfoComponent.getElement());
   }
 
+  _renderDayInfo() {
+    this._tripDay.getElement().append(...this._generatedDayInfoData.map((instance) => instance.element));
+  }
   _generateCard(card) {
     const cardComponent = new TripCard(card);
     const cardEditComponent = new TripCardEdit(card);
@@ -86,8 +89,9 @@ export default class TripController {
       cardEditComponent.removeElement();
       cardComponent.removeElement();
 
-      cardEditComponent.getElement().querySelector(`.event__reset-btn`).removeEventListener(`click`, onDeleteButtonClick);
-      // checkPointsCount();
+      cardEditComponent.getElement().querySelector(`.event__reset-btn`)
+        .removeEventListener(`click`, onDeleteButtonClick);
+      this._renderNoCards();
     };
 
     cardComponent.getElement()
@@ -109,16 +113,16 @@ export default class TripController {
 
     this._createDataStore(this._generatedCardsData, cardComponent);
     this._createDataStore(this._generatedEditCardsData, cardEditComponent);
-    // this._generatedCards.push(cardComponent);
-    // this._generatedEditCards.push(cardEditComponent);
-    // this._generatedCardsElements.push(cardComponent.getElement());
-    // this._generatedEditCardsElements.push(cardEditComponent.getElement());
+  }
+
+  _renderCards() {
+    this._tripList.getElement().append(...this._generatedCardsData.map((instance) => instance.element));
   }
 
   _checkPointsCount() {
     const tripEventsList = document.querySelector(`.trip-events__list`);
 
-    return tripEventsList.childElementCount();
+    return tripEventsList.childElementCount;
   }
 
   _clearTripRoute() {
@@ -128,25 +132,27 @@ export default class TripController {
 
       unrender(cardFilters);
       unrender(tripDaysElement);
-      this._clearFilters();
-      this._clearCards();
+      this._clearData(this._generatedFiltersData);
+      this._clearData(this._generatedDayInfoData);
+      this._clearData(this._generatedCardsData);
+      this._clearData(this._generatedEditCardsData);
       // renderNoPoints();
     }
   }
 
-  _clearFilters() {
-    this._generatedFilters.forEach((filter) => (filter._element = null));
-    this._generatedFiltersElements = [];
-  }
-
-  _clearCards() {
-    this._generatedCards.forEach((card) => (card._element = null));
-    this._generatedEditCards.forEach((editCard) => (editCard._element = null));
-    this._generatedCardsElements = [];
-    this._generatedEditCardsElements = [];
+  _clearData(data) {
+    data.forEach(function (obj) {
+      obj.instance.removeElement();
+      obj.element = ``;
+    });
   }
 
   _createDataStore(arr, component) {
     return arr.push({'instance': component, 'element': component.getElement()});
+  }
+
+  _renderNoCards() {
+    this._clearTripRoute();
+    render(this._container, this._noCards.getElement());
   }
 }
