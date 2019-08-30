@@ -25,7 +25,7 @@ export default class TripController {
     this._generatedCardsData = [];
     this._generatedEditCardsData = [];
   }
-  // FIXME: При удалении карточки удалять объект из массива _generatedCards/EditCards
+
   init() {
     // Фильтры точек маршрута
     this._filters.forEach((filter) => this._generateFilter(filter));
