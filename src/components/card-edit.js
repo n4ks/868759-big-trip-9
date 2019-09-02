@@ -14,6 +14,10 @@ export default class CardEdit extends AbstractComponent {
     this._endDate = endDate;
   }
 
+  getOffers() {
+    return this._offers;
+  }
+
   getTemplate() {
     return `<li class="trip-events__item">
     <form class="event  event--edit" action="#" method="post">
@@ -60,7 +64,7 @@ export default class CardEdit extends AbstractComponent {
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
+                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight">
                 <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
               </div>
             </fieldset>
@@ -141,7 +145,7 @@ export default class CardEdit extends AbstractComponent {
           <div class="event__available-offers">
             ${this._offers.map(({name, title, price, isChecked}) => `
         <div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${name}-1" type="checkbox" name="event-offer-${name}" ${isChecked ? `checked` : ``}>
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${name}-1" type="checkbox" name="event-offer" value="${name}" ${isChecked ? `checked` : ``}>
           <label class="event__offer-label" for="event-offer-${name}-1">
             <span class="event__offer-title">${title}</span>
             &plus;&euro;&nbsp;<span class="event__offer-price">${price}</span>

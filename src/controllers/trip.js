@@ -137,7 +137,39 @@ export default class TripController {
 
     cardEditComponent.getElement()
       .querySelector(`.event__save-btn`)
-      .addEventListener(`click`, () => {
+      .addEventListener(`click`, (evt) => {
+        evt.preventDefault();
+
+        const formData = new FormData(cardEditComponent.getElement().querySelector(`.event--edit`));
+        const formOffers = formData.getAll(`event-offer`);
+
+        const updateOffers = () => {
+          let updatedOffers = [];
+
+          cardEditComponent.getOffers().forEach((offer) => {
+            offer.isChecked = false;
+            if (formOffers.length > 0) {
+              formOffers.forEach((formOffer) => {
+                if (offer.name === formOffer) {
+                  offer.isChecked = true;
+                }
+              });
+            }
+            updatedOffers.push(offer);
+
+            return updatedOffers;
+          });
+        };
+
+        const entry = {
+          type: formData.get(`event-type`),
+          city: formData.get(`event-destination`),
+          startDate: formData.get(`event-start-time`),
+          endDate: formData.get(`event-end-time`),
+          ticketPrice: formData.get(`event-price`),
+          offers: updateOffers()
+        };
+
         enableCardMode();
       });
 
