@@ -4,13 +4,10 @@ import TripDays from '../components/trip-days.js';
 import TripDay from '../components/trip-day.js';
 import DayInfo from '../components/day-info.js';
 import TripList from '../components/trip-list.js';
-import TripCard from '../components/card.js';
-import TripCardEdit from '../components/card-edit.js';
 import NoCards from '../components/no-cards.js';
+import PointController from '../controllers/point.js';
 import {render, unrender} from '../components/util.js';
-import flatpickr from 'flatpickr';
-import 'flatpickr/dist/flatpickr.min.css';
-import 'flatpickr/dist/themes/light.css';
+
 
 export default class TripController {
   constructor(container, filters, dayInfos, cards) {
@@ -27,6 +24,9 @@ export default class TripController {
     this._generatedDayInfoData = [];
     this._generatedCardsData = [];
     this._generatedEditCardsData = [];
+
+    this._onDataChange = this._onDataChange.bind(this);
+    this._onDataDelete = this._onDataDelete.bind(this);
   }
 
   init() {
@@ -90,122 +90,6 @@ export default class TripController {
     generatedArray.splice(elementIndex, 1);
   }
 
-  _generateCard(card) {
-    const cardComponent = new TripCard(card);
-    const cardEditComponent = new TripCardEdit(card);
-
-    flatpickr(cardEditComponent.getElement().querySelector(`#event-start-time-1`), {
-      // dateFormat: `d/m/y H:i`,
-      enableTime: true,
-      defaultDate: new Date(cardEditComponent.StartDate),
-      // minDate: `today`,
-    });
-
-    flatpickr(cardEditComponent.getElement().querySelector(`#event-end-time-1`), {
-      // dateFormat: `d/m/y H:i`,
-      enableTime: true,
-      defaultDate: new Date(cardEditComponent.EndDate),
-      // minDate: cardEditComponent.StartDate,
-    });
-
-    const enableCardMode = () => cardEditComponent.getElement().replaceWith(cardComponent.getElement());
-    const enablecardEditMode = () => cardComponent.getElement().replaceWith(cardEditComponent.getElement());
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key === `Escape`) {
-        enableCardMode();
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      }
-    };
-
-    const onDeleteButtonClick = () => {
-      const deletedCardIndex = this._cards[this._cards.findIndex((value) => value === card)];
-      this._cards.splice(deletedCardIndex, 1);
-      this._removeGeneratedComponent(this._generatedCardsData, cardComponent);
-      this._removeGeneratedComponent(this._generatedEditCardsData, cardEditComponent);
-
-      unrender(cardEditComponent.getElement());
-      unrender(cardComponent.getElement());
-      cardEditComponent.removeElement();
-      cardComponent.removeElement();
-
-      cardEditComponent.getElement().querySelector(`.event__reset-btn`)
-        .removeEventListener(`click`, onDeleteButtonClick);
-
-      if (!this._checkPointsCount()) {
-        const cardFilters = document.querySelector(`.trip-events__trip-sort`);
-        unrender(cardFilters);
-        this._clearData(this._generatedFiltersData);
-        this._clearTripRoute();
-        this._renderNoCards();
-      }
-    };
-
-    cardComponent.getElement()
-      .querySelector(`.event__rollup-btn`)
-      .addEventListener(`click`, () => {
-        enablecardEditMode();
-        document.addEventListener(`keydown`, onEscKeyDown);
-      });
-
-    cardEditComponent.getElement()
-      .querySelector(`.event__save-btn`)
-      .addEventListener(`click`, (evt) => {
-        evt.preventDefault();
-
-        const formData = new FormData(cardEditComponent.getElement().querySelector(`.event--edit`));
-
-        const getCurrentOffersState = () => {
-          const checkedOffers = formData.getAll(`event-offer`);
-          let updatedOffers = [];
-
-          if (cardEditComponent.Offers.length) {
-            cardEditComponent.Offers.forEach((offer) => {
-              offer.isChecked = false;
-              checkedOffers.forEach((checkedOffer) => {
-                if (offer.name === checkedOffer) {
-                  offer.isChecked = true;
-                }
-              });
-              updatedOffers.push(offer);
-            });
-          }
-
-          return updatedOffers;
-        };
-
-        const entry = {
-          type: formData.get(`event-type`),
-          city: formData.get(`event-destination`),
-          description: cardEditComponent.Description,
-          photos: cardEditComponent.Photos,
-          startDate: new Date(formData.get(`event-start-time`)),
-          endDate: new Date(formData.get(`event-end-time`)),
-          ticketPrice: formData.get(`event-price`),
-          offers: getCurrentOffersState()
-        };
-
-        this._cards[this._cards.findIndex((value) => value === card)] = entry;
-        enableCardMode();
-        this._clearTripRoute();
-        this._removeGeneratedComponent(this._generatedCardsData, cardComponent);
-        this._removeGeneratedComponent(this._generatedEditCardsData, cardEditComponent);
-
-        this._renderRoute();
-      });
-
-    cardEditComponent.getElement()
-      .querySelector(`.event__reset-btn`)
-      .addEventListener(`click`, onDeleteButtonClick);
-
-    this._createDataStore(this._generatedCardsData, cardComponent);
-    this._createDataStore(this._generatedEditCardsData, cardEditComponent);
-  }
-
-  _renderCards(cardsData = this._generatedCardsData) {
-    this._tripList.getElement().append(...cardsData.map((instance) => instance.element));
-  }
-
   _checkPointsCount() {
     const tripEventsList = document.querySelector(`.trip-events__list`);
 
@@ -218,8 +102,7 @@ export default class TripController {
     this._renderDayInfo();
 
     // Точки маршрута
-    this._cards.forEach((card) => this._generateCard(card));
-    this._renderCards();
+    const pointController = new PointController(this._tripList, this._cards, this._generatedCardsData, this._generatedEditCardsData, this._onDataChange, this._onDataDelete);
 
     render(this._tripDay.getElement(), this._tripList.getElement());
     render(this._tripDays.getElement(), this._tripDay.getElement());
@@ -257,5 +140,32 @@ export default class TripController {
 
   _renderNoCards() {
     render(this._container, this._noCards.getElement());
+  }
+
+  _onDataChange(newData, oldData) {
+    this._cards[this._tasks.findIndex((it) => it === oldData)] = newData;
+
+    this._renderBoard(this._tasks);
+  }
+
+  _onDataDelete(cardComponent, cardEditComponent, currentCard) {
+    const deletedCardIndex = this._cards[this._cards.findIndex((value) => value === currentCard)];
+    this._cards.splice(deletedCardIndex, 1);
+
+    this._removeGeneratedComponent(this._generatedCardsData, cardComponent);
+    this._removeGeneratedComponent(this._generatedEditCardsData, cardEditComponent);
+
+    unrender(cardEditComponent.getElement());
+    unrender(cardComponent.getElement());
+    cardEditComponent.removeElement();
+    cardComponent.removeElement();
+
+    if (!this._checkPointsCount()) {
+      const cardFilters = document.querySelector(`.trip-events__trip-sort`);
+      unrender(cardFilters);
+      this._clearData(this._generatedFiltersData);
+      this._clearTripRoute();
+      this._renderNoCards();
+    }
   }
 }
