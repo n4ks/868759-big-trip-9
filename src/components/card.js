@@ -35,11 +35,11 @@ export default class Card extends AbstractComponent {
 
     <h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">
-    ${this._offers.map(({title, price}) => `
+    ${this._offers.map(({title, price, isChecked}) => isChecked ? `
     <li class="event__offer">
       <span class="event__offer-title">${title}</span>
       &plus;&euro;&nbsp;<span class="event__offer-price">${price}</span>
-    </li>`).join(``)}
+    </li>` : ``).join(``)}
     </ul>
 
     <button class="event__rollup-btn" type="button">

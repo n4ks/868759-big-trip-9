@@ -1,5 +1,5 @@
 import AbstractComponent from './abstract-component.js';
-import {capitalizeText, getTimeFromDate} from './util.js';
+import {capitalizeText} from './util.js';
 
 export default class CardEdit extends AbstractComponent {
   constructor({type, city, description, photos, ticketPrice, offers, startDate, endDate}) {
@@ -14,7 +14,23 @@ export default class CardEdit extends AbstractComponent {
     this._endDate = endDate;
   }
 
-  getOffers() {
+  get Description() {
+    return this._description;
+  }
+
+  get StartDate() {
+    return this._startDate;
+  }
+
+  get EndDate() {
+    return this._endDate;
+  }
+
+  get Photos() {
+    return this._photos;
+  }
+
+  get Offers() {
     return this._offers;
   }
 
@@ -64,7 +80,7 @@ export default class CardEdit extends AbstractComponent {
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight">
+                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
                 <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
               </div>
             </fieldset>
@@ -106,12 +122,12 @@ export default class CardEdit extends AbstractComponent {
           <label class="visually-hidden" for="event-start-time-1">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getTimeFromDate(this._startDate)}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getTimeFromDate(this._endDate)}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -160,7 +176,7 @@ export default class CardEdit extends AbstractComponent {
 
       <div class="event__photos-container">
         <div class="event__photos-tape">
-          ${this._photos.map((photo) => `<img class="event__photo" src="${photo}photo.jpg" alt="Event photo">`).join(``)}
+          ${this._photos.map((photo) => `<img class="event__photo" src="${photo}photo.jpg" name="photo" alt="Event photo">`).join(``)}
         </div >
       </div >
     </section >

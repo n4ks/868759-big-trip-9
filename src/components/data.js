@@ -32,8 +32,8 @@ export const generateCardsItems = () => ({
     `Nunc fermentum tortor ac porta dapibus.`,
     `In rutrum ac purus sit amet tempus.`].sort(() => mockHelper.getRandomSorting()).slice(0, mockHelper.getRandomNumber(RandomElementCount.DESCRIPTION)).join(` `),
   photos: mockHelper.generateRandomPhotos(RandomElementCount.PHOTO),
-  startDate: mockHelper.getRandomDate(Time.MIN_HOUR, Time.MAX_HOUR),
-  endDate: mockHelper.getRandomDate(Time.MIN_HOUR, Time.MAX_HOUR, Time.DAYS),
+  startDate: mockHelper.getStartDate(),
+  endDate: mockHelper.getRandomEndDate(Time.MIN_HOUR, Time.MAX_HOUR),
   ticketPrice: mockHelper.getRandomNumber(Price.MIN, Price.MAX),
   offers: [
     {
@@ -76,10 +76,13 @@ const mockHelper = {
   getRandomSorting() {
     return Math.random() - RANDOM_MODIFIER;
   },
-  getRandomDate(startHour, endHour, days = 0) {
+  getStartDate() {
+    return new Date(Date.now());
+  },
+  getRandomEndDate(startHour, endHour) {
     const startDate = Date.now();
     const endDate = new Date(Date.now());
-    endDate.setDate(endDate.getDate() + days);
+    endDate.setDate(endDate.getDate() + Time.DAYS);
     const date = new Date(+startDate + Math.random() * (endDate - startDate));
     const hour = startHour + Math.random() * (endHour - startHour);
     date.setHours(hour);

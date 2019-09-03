@@ -8,6 +8,9 @@ import TripCard from '../components/card.js';
 import TripCardEdit from '../components/card-edit.js';
 import NoCards from '../components/no-cards.js';
 import {render, unrender} from '../components/util.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import 'flatpickr/dist/themes/light.css';
 
 export default class TripController {
   constructor(container, filters, dayInfos, cards) {
@@ -31,6 +34,12 @@ export default class TripController {
     this._filters.forEach((filter) => this._generateFilter(filter));
     this._renderFilter();
 
+    // Заполнение контейнеров и рендер
+    render(this._container, this._filtersContainer.getElement());
+    this._renderRoute();
+  }
+
+  _renderRoute() {
     // Информация о глобальной точке маршрута
     this._dayInfos.forEach((dayInfo) => this._generateDayInfo(dayInfo));
     this._renderDayInfo();
@@ -39,8 +48,6 @@ export default class TripController {
     this._cards.forEach((card) => this._generateCard(card));
     this._renderCards();
 
-    // Заполнение контейнеров и рендер
-    render(this._container, this._filtersContainer.getElement());
     render(this._tripDay.getElement(), this._tripList.getElement());
     render(this._tripDays.getElement(), this._tripDay.getElement());
     render(this._container, this._tripDays.getElement());
@@ -101,6 +108,20 @@ export default class TripController {
     const cardComponent = new TripCard(card);
     const cardEditComponent = new TripCardEdit(card);
 
+    flatpickr(cardEditComponent.getElement().querySelector(`#event-start-time-1`), {
+      dateFormat: `d/m/y H:i`,
+      enableTime: true,
+      defaultDate: cardEditComponent.StartDate,
+      minDate: `today`,
+    });
+
+    flatpickr(cardEditComponent.getElement().querySelector(`#event-end-time-1`), {
+      dateFormat: `d/m/y H:i`,
+      enableTime: true,
+      defaultDate: cardEditComponent.EndDate,
+      minDate: cardEditComponent.StartDate,
+    });
+
     const enableCardMode = () => cardEditComponent.getElement().replaceWith(cardComponent.getElement());
     const enablecardEditMode = () => cardComponent.getElement().replaceWith(cardEditComponent.getElement());
 
@@ -112,6 +133,8 @@ export default class TripController {
     };
 
     const onDeleteButtonClick = () => {
+      const deletedCardIndex = this._cards[this._cards.findIndex((value) => value === card)];
+      this._cards.splice(deletedCardIndex, 1);
       this._removeGeneratedComponent(this._generatedCardsData, cardComponent);
       this._removeGeneratedComponent(this._generatedEditCardsData, cardEditComponent);
 
@@ -124,7 +147,11 @@ export default class TripController {
         .removeEventListener(`click`, onDeleteButtonClick);
 
       if (!this._checkPointsCount()) {
+        const cardFilters = document.querySelector(`.trip-events__trip-sort`);
+        unrender(cardFilters);
+        this._clearData(this._generatedFiltersData);
         this._clearTripRoute();
+        this._renderNoCards();
       }
     };
 
@@ -141,36 +168,45 @@ export default class TripController {
         evt.preventDefault();
 
         const formData = new FormData(cardEditComponent.getElement().querySelector(`.event--edit`));
-        const formOffers = formData.getAll(`event-offer`);
 
-        const updateOffers = () => {
+        const getCurrentOffersState = () => {
+          const checkedOffers = formData.getAll(`event-offer`);
           let updatedOffers = [];
 
-          cardEditComponent.getOffers().forEach((offer) => {
-            offer.isChecked = false;
-            if (formOffers.length > 0) {
-              formOffers.forEach((formOffer) => {
-                if (offer.name === formOffer) {
+          if (cardEditComponent.Offers.length) {
+            cardEditComponent.Offers.forEach((offer) => {
+              offer.isChecked = false;
+              checkedOffers.forEach((checkedOffer) => {
+                if (offer.name === checkedOffer) {
                   offer.isChecked = true;
                 }
               });
-            }
-            updatedOffers.push(offer);
+              updatedOffers.push(offer);
+            });
+          }
 
-            return updatedOffers;
-          });
+          return updatedOffers;
         };
 
         const entry = {
           type: formData.get(`event-type`),
           city: formData.get(`event-destination`),
-          startDate: formData.get(`event-start-time`),
-          endDate: formData.get(`event-end-time`),
+          description: cardEditComponent.Description,
+          photos: cardEditComponent.Photos,
+          startDate: new Date(formData.get(`event-start-time`)),
+          endDate: new Date(formData.get(`event-end-time`)),
           ticketPrice: formData.get(`event-price`),
-          offers: updateOffers()
+          offers: getCurrentOffersState()
         };
 
+        // console.log(card)
+        this._cards[this._cards.findIndex((value) => value === card)] = entry;
         enableCardMode();
+        this._clearTripRoute();
+        this._removeGeneratedComponent(this._generatedCardsData, cardComponent);
+        this._removeGeneratedComponent(this._generatedEditCardsData, cardEditComponent);
+
+        this._renderRoute();
       });
 
     cardEditComponent.getElement()
@@ -192,17 +228,21 @@ export default class TripController {
   }
 
   _clearTripRoute() {
-    const cardFilters = document.querySelector(`.trip-events__trip-sort`);
     const tripDaysElement = document.querySelector(`.trip-days`);
+    const dayElement = document.querySelector(`.trip-days__item`);
+    const dayInfoElement = document.querySelector(`.day__info`);
+    const tripEventsListElement = document.querySelector(`.trip-events__list`);
 
-    unrender(cardFilters);
+    unrender(tripEventsListElement);
+    while (tripEventsListElement.firstChild) {
+      tripEventsListElement.removeChild(tripEventsListElement.firstChild);
+    }
+    unrender(dayInfoElement);
+    unrender(dayElement);
     unrender(tripDaysElement);
-    this._clearData(this._generatedFiltersData);
     this._clearData(this._generatedDayInfoData);
     this._clearData(this._generatedCardsData);
     this._clearData(this._generatedEditCardsData);
-
-    this._renderNoCards();
   }
 
   _clearData(data) {
