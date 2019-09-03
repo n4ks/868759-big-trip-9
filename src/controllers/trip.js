@@ -39,20 +39,6 @@ export default class TripController {
     this._renderRoute();
   }
 
-  _renderRoute() {
-    // Информация о глобальной точке маршрута
-    this._dayInfos.forEach((dayInfo) => this._generateDayInfo(dayInfo));
-    this._renderDayInfo();
-
-    // Точки маршрута
-    this._cards.forEach((card) => this._generateCard(card));
-    this._renderCards();
-
-    render(this._tripDay.getElement(), this._tripList.getElement());
-    render(this._tripDays.getElement(), this._tripDay.getElement());
-    render(this._container, this._tripDays.getElement());
-  }
-
   _generateFilter(filter) {
     const filterComponent = new Filter(filter);
 
@@ -109,17 +95,17 @@ export default class TripController {
     const cardEditComponent = new TripCardEdit(card);
 
     flatpickr(cardEditComponent.getElement().querySelector(`#event-start-time-1`), {
-      dateFormat: `d/m/y H:i`,
+      // dateFormat: `d/m/y H:i`,
       enableTime: true,
-      defaultDate: cardEditComponent.StartDate,
-      minDate: `today`,
+      defaultDate: new Date(cardEditComponent.StartDate),
+      // minDate: `today`,
     });
 
     flatpickr(cardEditComponent.getElement().querySelector(`#event-end-time-1`), {
-      dateFormat: `d/m/y H:i`,
+      // dateFormat: `d/m/y H:i`,
       enableTime: true,
-      defaultDate: cardEditComponent.EndDate,
-      minDate: cardEditComponent.StartDate,
+      defaultDate: new Date(cardEditComponent.EndDate),
+      // minDate: cardEditComponent.StartDate,
     });
 
     const enableCardMode = () => cardEditComponent.getElement().replaceWith(cardComponent.getElement());
@@ -199,7 +185,6 @@ export default class TripController {
           offers: getCurrentOffersState()
         };
 
-        // console.log(card)
         this._cards[this._cards.findIndex((value) => value === card)] = entry;
         enableCardMode();
         this._clearTripRoute();
@@ -225,6 +210,20 @@ export default class TripController {
     const tripEventsList = document.querySelector(`.trip-events__list`);
 
     return tripEventsList.childElementCount;
+  }
+
+  _renderRoute() {
+    // Информация о глобальной точке маршрута
+    this._dayInfos.forEach((dayInfo) => this._generateDayInfo(dayInfo));
+    this._renderDayInfo();
+
+    // Точки маршрута
+    this._cards.forEach((card) => this._generateCard(card));
+    this._renderCards();
+
+    render(this._tripDay.getElement(), this._tripList.getElement());
+    render(this._tripDays.getElement(), this._tripDay.getElement());
+    render(this._container, this._tripDays.getElement());
   }
 
   _clearTripRoute() {
