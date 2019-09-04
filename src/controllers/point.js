@@ -12,6 +12,10 @@ export default class PointController {
     this._generatedEditCardsData = cardsEditArray;
     this._onDataChange = onDataChange;
     this._onDataDelete = onDataDelete;
+    this._openedCard = {
+      card: null,
+      cardEdit: null
+    };
 
     this.create();
   }
@@ -39,6 +43,7 @@ export default class PointController {
       // minDate: cardEditComponent.StartDate,
     });
 
+    // Переключение между режимами просмотра/редактирования
     const enableCardMode = () => cardEditComponent.getElement().replaceWith(cardComponent.getElement());
     const enablecardEditMode = () => cardComponent.getElement().replaceWith(cardEditComponent.getElement());
 
@@ -59,8 +64,9 @@ export default class PointController {
     cardComponent.getElement()
       .querySelector(`.event__rollup-btn`)
       .addEventListener(`click`, () => {
-        enablecardEditMode();
         document.addEventListener(`keydown`, onEscKeyDown);
+        this._closeEditableCard(cardComponent, cardEditComponent);
+        enablecardEditMode();
       });
 
     cardEditComponent.getElement()
@@ -117,5 +123,19 @@ export default class PointController {
 
   renderCards(cardsData = this._generatedCardsData) {
     this._container.getElement().append(...cardsData.map((instance) => instance.element));
+  }
+
+  _closeEditableCard(card, cardEdit) {
+    if (this._openedCard.card === null || this._openedCard.cardEdit === null) {
+      this._openedCard.card = card;
+      this._openedCard.cardEdit = cardEdit;
+
+      card.getElement().replaceWith(cardEdit.getElement());
+    } else {
+      this._openedCard.cardEdit.getElement().replaceWith(this._openedCard.card.getElement());
+
+      this._openedCard.card = card;
+      this._openedCard.cardEdit = cardEdit;
+    }
   }
 }
