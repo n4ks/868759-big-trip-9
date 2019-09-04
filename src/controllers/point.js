@@ -103,7 +103,8 @@ export default class PointController {
           startDate: new Date(formData.get(`event-start-time`)),
           endDate: new Date(formData.get(`event-end-time`)),
           ticketPrice: formData.get(`event-price`),
-          offers: getCurrentOffersState()
+          offers: getCurrentOffersState(),
+          isFavorite: formData.get(`event-favorite`)
         };
 
         this._onDataChange(entry, card, cardComponent, cardEditComponent);

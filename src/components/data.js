@@ -35,6 +35,7 @@ export const generateCardsItems = () => ({
   startDate: mockHelper.getStartDate(),
   endDate: mockHelper.getRandomEndDate(Time.MIN_HOUR, Time.MAX_HOUR),
   ticketPrice: mockHelper.getRandomNumber(Price.MIN, Price.MAX),
+  isFavorite: mockHelper.getRandomBool(),
   offers: [
     {
       title: `Add luggage`,
