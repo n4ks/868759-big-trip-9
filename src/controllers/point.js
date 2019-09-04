@@ -37,7 +37,7 @@ export default class PointController {
     });
 
     flatpickr(cardEditComponent.getElement().querySelector(`#event-end-time-1`), {
-      // dateFormat: `d/m/y H:i`,
+      // dateFormat: `d.m.y H:i`,
       enableTime: true,
       defaultDate: new Date(cardEditComponent.EndDate),
       // minDate: cardEditComponent.StartDate,
