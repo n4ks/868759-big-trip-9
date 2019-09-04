@@ -24,6 +24,7 @@ export default class TripController {
     this._generatedDayInfoData = [];
     this._generatedCardsData = [];
     this._generatedEditCardsData = [];
+    this._pointController = null;
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onDataDelete = this._onDataDelete.bind(this);
@@ -51,14 +52,14 @@ export default class TripController {
       switch (evt.target.dataset.sortType) {
         case `price`:
           const sortedByPrice = this._generatedCardsData.slice().sort((a, b) => a.instance._ticketPrice - b.instance._ticketPrice);
-          this._renderCards(sortedByPrice);
+          this._pointController.renderCards(sortedByPrice);
           break;
         case `time`:
           const sortedByTime = this._generatedCardsData.slice().sort((a, b) => a.instance._startDate - b.instance._startDate);
-          this._renderCards(sortedByTime);
+          this._pointController.renderCards(sortedByTime);
           break;
         case `default`:
-          this._renderCards();
+          this._pointController.renderCards();
           break;
       }
     };
@@ -102,7 +103,7 @@ export default class TripController {
     this._renderDayInfo();
 
     // Точки маршрута
-    const pointController = new PointController(this._tripList, this._cards, this._generatedCardsData, this._generatedEditCardsData, this._onDataChange, this._onDataDelete);
+    this._pointController = new PointController(this._tripList, this._cards, this._generatedCardsData, this._generatedEditCardsData, this._onDataChange, this._onDataDelete);
 
     render(this._tripDay.getElement(), this._tripList.getElement());
     render(this._tripDays.getElement(), this._tripDay.getElement());
@@ -142,10 +143,14 @@ export default class TripController {
     render(this._container, this._noCards.getElement());
   }
 
-  _onDataChange(newData, oldData) {
-    this._cards[this._tasks.findIndex((it) => it === oldData)] = newData;
+  _onDataChange(editedCard, selectedCard, cardComponent, cardEditComponent) {
+    this._cards[this._cards.findIndex((card) => card === selectedCard)] = editedCard;
 
-    this._renderBoard(this._tasks);
+    this._clearTripRoute();
+    this._removeGeneratedComponent(this._generatedCardsData, cardComponent);
+    this._removeGeneratedComponent(this._generatedEditCardsData, cardEditComponent);
+
+    this._renderRoute();
   }
 
   _onDataDelete(cardComponent, cardEditComponent, currentCard) {

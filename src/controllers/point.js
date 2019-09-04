@@ -1,6 +1,5 @@
 import TripCard from '../components/card';
 import TripCardEdit from '../components/card-edit';
-import {unrender} from '../components/util.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
@@ -19,7 +18,7 @@ export default class PointController {
 
   create() {
     this._cardsData.forEach((cardData) => this._generateCard(cardData));
-    this._renderCards();
+    this.renderCards();
   }
 
   _generateCard(card) {
@@ -101,13 +100,7 @@ export default class PointController {
           offers: getCurrentOffersState()
         };
 
-        this._cards[this._cards.findIndex((value) => value === card)] = entry;
-        enableCardMode();
-        // this._clearTripRoute();
-        // this._removeGeneratedComponent(this._generatedCardsData, cardComponent);
-        // this._removeGeneratedComponent(this._generatedEditCardsData, cardEditComponent);
-
-        this._renderRoute();
+        this._onDataChange(entry, card, cardComponent, cardEditComponent);
       });
 
     cardEditComponent.getElement()
@@ -118,11 +111,11 @@ export default class PointController {
     this._createDataStore(this._generatedEditCardsData, cardEditComponent);
   }
 
-  _renderCards(cardsData = this._generatedCardsData) {
-    this._container.getElement().append(...cardsData.map((instance) => instance.element));
-  }
-
   _createDataStore(arr, component) {
     return arr.push({'instance': component, 'element': component.getElement()});
+  }
+
+  renderCards(cardsData = this._generatedCardsData) {
+    this._container.getElement().append(...cardsData.map((instance) => instance.element));
   }
 }
