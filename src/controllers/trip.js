@@ -25,6 +25,7 @@ export default class TripController {
     this._generatedCardsData = [];
     this._generatedEditCardsData = [];
     this._pointController = null;
+    this._currentFilter = `default`;
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onDataDelete = this._onDataDelete.bind(this);
@@ -49,24 +50,31 @@ export default class TripController {
         return;
       }
 
-      switch (evt.target.dataset.sortType) {
-        case `price`:
-          const sortedByPrice = this._generatedCardsData.slice().sort((a, b) => b.instance._ticketPrice - a.instance._ticketPrice);
-          this._pointController.renderCards(sortedByPrice);
-          break;
-        case `time`:
-          const sortedByTime = this._generatedCardsData.slice().sort((a, b) => b.instance._endDate - a.instance._endDate);
-          this._pointController.renderCards(sortedByTime);
-          break;
-        case `default`:
-          this._pointController.renderCards();
-          break;
-      }
+      this._currentFilter = evt.target.dataset.sortType;
+      this._applyFilter(this._currentFilter);
+
     };
     filterComponent.getElement().addEventListener(`click`, onSortLinkClick);
 
     this._createDataStore(this._generatedFiltersData, filterComponent);
   }
+
+  _applyFilter(filterType) {
+    switch (filterType) {
+      case `price`:
+        const sortedByPrice = this._generatedCardsData.slice().sort((a, b) => b.instance._ticketPrice - a.instance._ticketPrice);
+        this._pointController.renderCards(sortedByPrice);
+        break;
+      case `time`:
+        const sortedByTime = this._generatedCardsData.slice().sort((a, b) => b.instance._endDate - a.instance._endDate);
+        this._pointController.renderCards(sortedByTime);
+        break;
+      case `default`:
+        this._pointController.renderCards();
+        break;
+    }
+  }
+
 
   _renderFilter() {
     const filterOffers = this._filtersContainer.getElement()
@@ -151,6 +159,7 @@ export default class TripController {
     this._removeGeneratedComponent(this._generatedEditCardsData, cardEditComponent);
 
     this._renderRoute();
+    this._applyFilter(this._currentFilter);
   }
 
   _onDataDelete(cardComponent, cardEditComponent, currentCard) {
