@@ -133,6 +133,8 @@ export default class PointController {
       card.getElement().replaceWith(cardEdit.getElement());
     } else {
       this._openedCard.cardEdit.getElement().replaceWith(this._openedCard.card.getElement());
+      this._openedCard.cardEdit.getElement()
+        .querySelector(`.event--edit`).reset();
 
       this._openedCard.card = card;
       this._openedCard.cardEdit = cardEdit;

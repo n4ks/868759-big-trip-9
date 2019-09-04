@@ -51,11 +51,11 @@ export default class TripController {
 
       switch (evt.target.dataset.sortType) {
         case `price`:
-          const sortedByPrice = this._generatedCardsData.slice().sort((a, b) => a.instance._ticketPrice - b.instance._ticketPrice);
+          const sortedByPrice = this._generatedCardsData.slice().sort((a, b) => b.instance._ticketPrice - a.instance._ticketPrice);
           this._pointController.renderCards(sortedByPrice);
           break;
         case `time`:
-          const sortedByTime = this._generatedCardsData.slice().sort((a, b) => a.instance._startDate - b.instance._startDate);
+          const sortedByTime = this._generatedCardsData.slice().sort((a, b) => b.instance._endDate - a.instance._endDate);
           this._pointController.renderCards(sortedByTime);
           break;
         case `default`:
