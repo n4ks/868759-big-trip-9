@@ -79,10 +79,7 @@ const getMinMaxDate = (points, type) => {
   return result;
 };
 
-const checkClassAvailability = (element, className) => element.classList.contains(className);
-
-
 export {
   Position, createElement, render, unrender, capitalizeText, getTimeFromDate,
-  getMonthAsString, calculateDuration, getMinMaxDate, DatesOperationType, checkClassAvailability
+  getMonthAsString, calculateDuration, getMinMaxDate, DatesOperationType
 };

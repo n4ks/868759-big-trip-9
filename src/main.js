@@ -3,9 +3,11 @@ import TripInfo from './components/trip-info.js';
 import Menu from './components/menu.js';
 import Filter from './components/filters.js';
 import TripController from './controllers/trip.js';
-// utils
-import {Position, createElement, render, getMinMaxDate, DatesOperationType, checkClassAvailability} from './components/util.js';
 import Statistics from './components/statistics.js';
+import RenderStats from './components/render-stats.js';
+// utils
+import {Position, createElement, render, getMinMaxDate, DatesOperationType} from './components/util.js';
+
 
 const Class = {
   VISUALLY_HIDDEN: `visually-hidden`,
@@ -115,9 +117,7 @@ const navigationContainer = createElement(navigationTemplate);
 const renderMenu = (menuData) => {
   const menu = new Menu(menuData);
 
-  // Маршрут / статистика
-  const stats = new Statistics();
-
+  // Переключение между маршрутом и статистикой
   menu.getElement().addEventListener(`click`, (evt) => {
     if (evt.target.tagName !== `A`) {
       return;
@@ -125,15 +125,14 @@ const renderMenu = (menuData) => {
     switch (evt.target.id) {
       case `table`:
         tripController.show();
-        stats.getElement().classList.add(Class.VISUALLY_HIDDEN);
         evt.target.classList.add(Class.MENU_BTN_ACTIVE);
+        stats.getElement().classList.add(Class.VISUALLY_HIDDEN);
         controlsElement.querySelector(`#stats`).classList.remove(Class.MENU_BTN_ACTIVE);
         break;
       case `stats`:
         tripController.hide();
-        stats.getElement().classList.remove(Class.VISUALLY_HIDDEN);
-        menu.getElement().classList.remove(Class.MENU_BTN_ACTIVE);
         evt.target.classList.add(Class.MENU_BTN_ACTIVE);
+        stats.getElement().classList.remove(Class.VISUALLY_HIDDEN);
         controlsElement.querySelector(`#table`).classList.remove(Class.MENU_BTN_ACTIVE);
         break;
       default:
@@ -161,3 +160,6 @@ render(ControlsHeaders.SECOND, filtersContainer, Position.AFTER);
 const tripController = new TripController(tripEventsElement, cardFiltersItems, dayInfoItems, cardsMock);
 tripController.init();
 
+const stats = new Statistics();
+const renderStats = new RenderStats(cardsMock, stats);
+renderStats.generateStats();
