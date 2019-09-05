@@ -4,7 +4,13 @@ import Menu from './components/menu.js';
 import Filter from './components/filters.js';
 import TripController from './controllers/trip.js';
 // utils
-import {Position, createElement, render, getMinMaxDate, DatesOperationType} from './components/util.js';
+import {Position, createElement, render, getMinMaxDate, DatesOperationType, checkClassAvailability} from './components/util.js';
+import Statistics from './components/statistics.js';
+
+const Class = {
+  VISUALLY_HIDDEN: `visually-hidden`,
+  MENU_BTN_ACTIVE: `trip-tabs__btn--active`
+};
 
 const CARDS_COUNT = 4;
 
@@ -24,11 +30,10 @@ const tripEventsElement = document.querySelector(`.trip-events`);
 const navigationTemplate = `<nav class="trip-controls__trip-tabs  trip-tabs"></nav>`;
 const menuItems = [
   {
-    label: `Table`,
-    extraClass: ` trip-tabs__btn--active`
+    label: `table`,
   },
   {
-    label: `Stats`
+    label: `stats`
   }
 ];
 
@@ -110,6 +115,32 @@ const navigationContainer = createElement(navigationTemplate);
 const renderMenu = (menuData) => {
   const menu = new Menu(menuData);
 
+  // Маршрут / статистика
+  const stats = new Statistics();
+
+  menu.getElement().addEventListener(`click`, (evt) => {
+    if (evt.target.tagName !== `A`) {
+      return;
+    }
+    switch (evt.target.id) {
+      case `table`:
+        tripController.show();
+        stats.getElement().classList.add(Class.VISUALLY_HIDDEN);
+        evt.target.classList.add(Class.MENU_BTN_ACTIVE);
+        controlsElement.querySelector(`#stats`).classList.remove(Class.MENU_BTN_ACTIVE);
+        break;
+      case `stats`:
+        tripController.hide();
+        stats.getElement().classList.remove(Class.VISUALLY_HIDDEN);
+        menu.getElement().classList.remove(Class.MENU_BTN_ACTIVE);
+        evt.target.classList.add(Class.MENU_BTN_ACTIVE);
+        controlsElement.querySelector(`#table`).classList.remove(Class.MENU_BTN_ACTIVE);
+        break;
+      default:
+        break;
+    }
+  });
+
   render(navigationContainer, menu.getElement());
 };
 
@@ -129,3 +160,4 @@ render(ControlsHeaders.SECOND, filtersContainer, Position.AFTER);
 
 const tripController = new TripController(tripEventsElement, cardFiltersItems, dayInfoItems, cardsMock);
 tripController.init();
+

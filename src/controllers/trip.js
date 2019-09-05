@@ -182,4 +182,12 @@ export default class TripController {
       this._renderNoCards();
     }
   }
+
+  hide() {
+    this._container.classList.add(`visually-hidden`);
+  }
+
+  show() {
+    this._container.classList.remove(`visually-hidden`);
+  }
 }
