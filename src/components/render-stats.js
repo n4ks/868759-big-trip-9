@@ -19,7 +19,7 @@ export default class RenderStats {
     this._data = cardMock;
   }
 
-  generateStats() {
+  generateMoneyChart() {
     const pageMainElement = document.querySelector(`.page-body__page-main`);
 
     render(pageMainElement.querySelector(`.page-body__container`), this._stats.getElement());

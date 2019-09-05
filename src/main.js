@@ -162,4 +162,4 @@ tripController.init();
 
 const stats = new Statistics();
 const renderStats = new RenderStats(cardsMock, stats);
-renderStats.generateStats();
+renderStats.generateMoneyChart();
