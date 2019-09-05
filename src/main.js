@@ -3,7 +3,6 @@ import TripInfo from './components/trip-info.js';
 import Menu from './components/menu.js';
 import Filter from './components/filters.js';
 import TripController from './controllers/trip.js';
-import Statistics from './components/statistics.js';
 import RenderStats from './components/render-stats.js';
 // utils
 import {Position, createElement, render, getMinMaxDate, DatesOperationType} from './components/util.js';
@@ -116,9 +115,9 @@ renderTripInfo(routePoints);
 const navigationContainer = createElement(navigationTemplate);
 const renderMenu = (menuData) => {
   const menu = new Menu(menuData);
-
   // Переключение между маршрутом и статистикой
   menu.getElement().addEventListener(`click`, (evt) => {
+    const stats = document.querySelector(`.statistics`);
     if (evt.target.tagName !== `A`) {
       return;
     }
@@ -126,13 +125,13 @@ const renderMenu = (menuData) => {
       case `table`:
         tripController.show();
         evt.target.classList.add(Class.MENU_BTN_ACTIVE);
-        stats.getElement().classList.add(Class.VISUALLY_HIDDEN);
+        stats.classList.add(Class.VISUALLY_HIDDEN);
         controlsElement.querySelector(`#stats`).classList.remove(Class.MENU_BTN_ACTIVE);
         break;
       case `stats`:
         tripController.hide();
         evt.target.classList.add(Class.MENU_BTN_ACTIVE);
-        stats.getElement().classList.remove(Class.VISUALLY_HIDDEN);
+        stats.classList.remove(Class.VISUALLY_HIDDEN);
         controlsElement.querySelector(`#table`).classList.remove(Class.MENU_BTN_ACTIVE);
         break;
       default:
@@ -160,6 +159,5 @@ render(ControlsHeaders.SECOND, filtersContainer, Position.AFTER);
 const tripController = new TripController(tripEventsElement, cardFiltersItems, dayInfoItems, cardsMock);
 tripController.init();
 
-const stats = new Statistics();
-const renderStats = new RenderStats(cardsMock, stats);
-renderStats.generateMoneyChart();
+const renderStats = new RenderStats(cardsMock);
+renderStats.init();
