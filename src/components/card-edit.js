@@ -13,6 +13,7 @@ export default class CardEdit extends AbstractComponent {
     this._startDate = StartDate;
     this._endDate = EndDate;
     this._isFavorite = IsFavorite;
+    console.log(this._offers)
   }
 
   get Description() {
@@ -164,7 +165,7 @@ export default class CardEdit extends AbstractComponent {
         <div class="event__offer-selector">
           <input class="event__offer-checkbox  visually-hidden" id="event-offer-${cutLastWord(title)}-1" type="checkbox" name="event-offer" value="${cutLastWord(title)}"
           ${isChecked ? `checked` : ``}>
-          <label class="event__offer-label" for="event-offer-${name}-1">
+          <label class="event__offer-label" for="event-offer-${cutLastWord(title)}-1">
             <span class="event__offer-title">${title}</span>
             &plus;&euro;&nbsp;<span class="event__offer-price">${price}</span>
           </label>
@@ -178,7 +179,7 @@ export default class CardEdit extends AbstractComponent {
 
       <div class="event__photos-container">
         <div class="event__photos-tape">
-          ${this._photos.map((photo) => `<img class="event__photo" src="${photo}photo.jpg" name="photo" alt="Event photo">`).join(``)}
+          ${this._photos.map((photo) => `<img class="event__photo" src="${photo.src}photo.jpg" name="photo" alt="${photo.alt}">`).join(``)}
         </div >
       </div >
     </section >

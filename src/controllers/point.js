@@ -28,7 +28,7 @@ export default class PointController {
   _generateCard(card) {
     const cardComponent = new TripCard(card);
     const cardEditComponent = new TripCardEdit(card);
-    console.log(card)
+
     flatpickr(cardEditComponent.getElement().querySelector(`#event-start-time-1`), {
       // dateFormat: `d/m/y H:i`,
       enableTime: true,

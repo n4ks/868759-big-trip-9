@@ -7,6 +7,7 @@ const Color = {
   BLUE: `rgba(54, 162, 235, 0.7)`,
   YELLOW: `rgba(255, 206, 86, 0.7)`,
   TEAL: `rgba(75, 192, 192, 0.7)`,
+  OCEAN: `rgba(50, 135, 168, 0.7)`
 };
 
 const ChartConfig = {
@@ -17,9 +18,9 @@ const ChartConfig = {
 };
 
 export default class RenderStats {
-  constructor(cardMock) {
+  constructor(cardData) {
     this._stats = new Statistics();
-    this._data = cardMock;
+    this._data = cardData;
     this._moneyChart = null;
     this._transportChart = null;
   }
@@ -34,13 +35,13 @@ export default class RenderStats {
 
   _generateMoneyChart() {
     const moneyCtx = this._stats.getElement().querySelector(`.statistics__chart--money`);
-    const moneyChartLabels = new Set(this._data.map((point) => point.type));
+    const moneyChartLabels = new Set(this._data.map((point) => point.Type));
 
     const moneyChartPrice = Array.from(moneyChartLabels).map((label) => {
       let sum = 0;
-      this._data.forEach((card) => {
-        if (card.type === label) {
-          sum += card.ticketPrice;
+      this._data.forEach((point) => {
+        if (point.Type === label) {
+          sum += point.TicketPrice;
         }
       });
 
@@ -59,6 +60,7 @@ export default class RenderStats {
             Color.BLUE,
             Color.YELLOW,
             Color.TEAL,
+            Color.OCEAN
 
           ],
           borderColor: [
@@ -66,6 +68,7 @@ export default class RenderStats {
             Color.BLUE,
             Color.YELLOW,
             Color.TEAL,
+            Color.OCEAN
           ],
           borderWidth: ChartConfig.BORDER_WIDTH
         }]
@@ -86,11 +89,11 @@ export default class RenderStats {
     const transportCtx = document.querySelector(`.statistics__chart--transport`);
     const ignoredServices = [`check-in`, `sightseeing`, `restaurant`];
 
-    const transportChartLabels = new Set(this._data.filter((point) => !ignoredServices.includes(point.type)).map((point) => point.type));
+    const transportChartLabels = new Set(this._data.filter((point) => !ignoredServices.includes(point.Type)).map((point) => point.Type));
     const transportChartCount = Array.from(transportChartLabels).map((label) => {
       let sum = 0;
-      this._data.forEach((card) => {
-        if (card.type === label) {
+      this._data.forEach((point) => {
+        if (point.Type === label) {
           sum++;
         }
       });
