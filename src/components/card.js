@@ -2,14 +2,14 @@ import AbstractComponent from './abstract-component.js';
 import {capitalizeText, getTimeFromDate, calculateDuration} from './util.js';
 
 export default class Card extends AbstractComponent {
-  constructor({type, city, startDate, endDate, ticketPrice, offers}) {
+  constructor({Type, City, StartDate, EndDate, TicketPrice, Offers}) {
     super();
-    this._type = type;
-    this._city = city;
-    this._startDate = startDate;
-    this._endDate = endDate;
-    this._ticketPrice = ticketPrice;
-    this._offers = offers;
+    this._type = Type;
+    this._city = City;
+    this._startDate = StartDate;
+    this._endDate = EndDate;
+    this._ticketPrice = TicketPrice;
+    this._offers = Offers;
   }
 
   getTemplate() {

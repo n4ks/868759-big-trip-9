@@ -1,18 +1,18 @@
 import AbstractComponent from './abstract-component.js';
-import {capitalizeText} from './util.js';
+import {capitalizeText, cutLastWord} from './util.js';
 
 export default class CardEdit extends AbstractComponent {
-  constructor({type, city, description, photos, ticketPrice, offers, startDate, endDate, isFavorite}) {
+  constructor({Type, City, Description, Photos, TicketPrice, Offers, StartDate, EndDate, IsFavorite}) {
     super();
-    this._type = type;
-    this._city = city;
-    this._description = description;
-    this._photos = photos;
-    this._ticketPrice = ticketPrice;
-    this._offers = offers;
-    this._startDate = startDate;
-    this._endDate = endDate;
-    this._isFavorite = isFavorite;
+    this._type = Type;
+    this._city = City;
+    this._description = Description;
+    this._photos = Photos;
+    this._ticketPrice = TicketPrice;
+    this._offers = Offers;
+    this._startDate = StartDate;
+    this._endDate = EndDate;
+    this._isFavorite = IsFavorite;
   }
 
   get Description() {
@@ -160,9 +160,10 @@ export default class CardEdit extends AbstractComponent {
         <section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
           <div class="event__available-offers">
-            ${this._offers.map(({name, title, price, isChecked}) => `
+            ${this._offers.map(({title, price, isChecked}) => `
         <div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${name}-1" type="checkbox" name="event-offer" value="${name}" ${isChecked ? `checked` : ``}>
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${cutLastWord(title)}-1" type="checkbox" name="event-offer" value="${cutLastWord(title)}"
+          ${isChecked ? `checked` : ``}>
           <label class="event__offer-label" for="event-offer-${name}-1">
             <span class="event__offer-title">${title}</span>
             &plus;&euro;&nbsp;<span class="event__offer-price">${price}</span>

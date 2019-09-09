@@ -71,15 +71,20 @@ const calculateDuration = (secondDate, firstDate) => {
 const getMinMaxDate = (points, type) => {
   let result;
   if (type === DatesOperationType.STARTDATE_MIN) {
-    result = points.reduce((current, next) => (current.startDate < next.startDate) ? current : next).startDate;
+    result = points.reduce((current, next) => (current.StartDate < next.StartDate) ? current : next).StartDate;
   } else if (type === DatesOperationType.ENDDATE_MAX) {
-    result = points.reduce((current, next) => (current.endDate > next.endDate) ? current : next).endDate;
+    result = points.reduce((current, next) => (current.EndDate > next.EndDate) ? current : next).EndDate;
   }
 
   return result;
 };
 
+const cutLastWord = (text) => {
+  const words = text.split(` `);
+  return words[words.length - 1];
+};
+
 export {
   Position, createElement, render, unrender, capitalizeText, getTimeFromDate,
-  getMonthAsString, calculateDuration, getMinMaxDate, DatesOperationType
+  getMonthAsString, calculateDuration, getMinMaxDate, DatesOperationType, cutLastWord
 };
