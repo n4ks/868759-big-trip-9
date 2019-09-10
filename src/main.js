@@ -80,6 +80,21 @@ data.getCards().then((cardData) => {
   // const generateCards = (count) => new Array(count).fill(``).map(generateCardsItems);
   // const cardsMock = generateCards(CARDS_COUNT);
 
+  const generateDayInfos = () => {
+    let startDays = [];
+    let i = 1;
+    startDays = (cardData.map((card) => card.StartDate.getDate()));
+
+    const uniqueDays = new Set(startDays);
+    const dayInfo = Array.from(uniqueDays).map((day) => ({
+      dayNumber: i++,
+      date: day
+    }));
+
+    return dayInfo;
+  };
+
+  console.log(generateDayInfos());
   const dayInfoItems = [
     {
       dayNumber: 1,
