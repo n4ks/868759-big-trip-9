@@ -146,23 +146,27 @@ export default class TripController {
 
   _clearTripRoute() {
     const tripDaysElement = document.querySelector(`.trip-days`);
-    const dayElement = document.querySelector(`.trip-days__item`);
-    const dayInfoElement = document.querySelector(`.day__info`);
+    // const dayElement = document.querySelector(`.trip-days__item`);
+    // const dayInfoElement = document.querySelector(`.day__info`);
     const tripEventsListElement = document.querySelector(`.trip-events__list`);
 
     unrender(tripEventsListElement);
+    // FIXME: вынести в ф-цию
     while (tripEventsListElement.firstChild) {
       tripEventsListElement.removeChild(tripEventsListElement.firstChild);
     }
-    unrender(dayInfoElement);
-    unrender(dayElement);
-    unrender(tripDaysElement);
+    while (tripDaysElement.firstChild) {
+      tripDaysElement.removeChild(tripDaysElement.firstChild);
+    }
+    // unrender(dayInfoElement);
+    // unrender(dayElement);
+    // unrender(tripDaysElement);
     this._clearData(this._generatedDayInfoData);
     this._clearData(this._generatedCardsData);
     this._clearData(this._generatedEditCardsData);
     this._generatedDayInfoData = [];
-    this._generatedCardsData = [];
-    this._generatedEditCardsData = [];
+    // this._generatedCardsData = [];
+    // this._generatedEditCardsData = [];
   }
 
   _clearData(data) {
@@ -184,10 +188,10 @@ export default class TripController {
     this._cards[this._cards.findIndex((card) => card === selectedCard)] = editedCard;
     this._clearTripRoute();
     this._removeGeneratedComponent(this._generatedCardsData, cardComponent);
-    this._generatedCardsData = [];
     this._removeGeneratedComponent(this._generatedEditCardsData, cardEditComponent);
-    this._generatedEditCardsData = [];
-    // this._generatedDays = [];
+    // this._generatedCardsData = [];
+    // this._generatedEditCardsData = [];
+    // this._generatedDayInfoData = [];
 
     this._renderRoute();
     this._applyFilter(this._currentFilter);
