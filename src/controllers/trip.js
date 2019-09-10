@@ -15,9 +15,8 @@ export default class TripController {
     this._filtersContainer = new FiltersContainer();
     this._filters = filters;
     this._tripDays = new TripDays();
-    this._tripDay = new TripDay();
+    this._generatedDays = null;
     this._dayInfos = null;
-    this._tripList = new TripList();
     this._cards = cards;
     this._noCards = new NoCards();
     this._generatedFiltersData = [];
@@ -89,7 +88,7 @@ export default class TripController {
   _getDayInfos() {
     let startDays = [];
     let i = 1;
-    startDays = (this._cards.map((card) => `${card.StartDate.getFullYear()}-${card.StartDate.getMonth()}-${card.StartDate.getDate()}`));
+    startDays = (this._cards.map((card) => `${card.StartDate.getFullYear()}-${card.StartDate.getMonth() + 1}-${card.StartDate.getDate()}`));
     const uniqueDays = new Set(startDays);
 
     const uniqueDayInfos = Array.from(uniqueDays).map((day) => ({
@@ -106,8 +105,17 @@ export default class TripController {
     this._createDataStore(this._generatedDayInfoData, dayInfoComponent);
   }
 
-  _renderDayInfo() {
-    this._tripDay.getElement().append(...this._generatedDayInfoData.map((instance) => instance.element));
+  _generateDays() {
+    const generatedDays = this._generatedDayInfoData.map((dayInfo) => {
+      const tripDayComponent = new TripDay();
+      const tripListComponent = new TripList();
+      tripDayComponent.getElement().append(dayInfo.element);
+      tripDayComponent.getElement().append(tripListComponent.getElement());
+
+      return tripDayComponent.getElement();
+    });
+
+    this._generatedDays = generatedDays;
   }
 
   // Удаление объекта из массива сгенерированных данных
@@ -125,15 +133,14 @@ export default class TripController {
   _renderRoute() {
     // Информация о глобальной точке маршрута
     this._getDayInfos();
-
     this._dayInfos.forEach((dayInfo) => this._generateDayInfo(dayInfo));
-    this._renderDayInfo();
+    this._generateDays();
 
     // Точки маршрута
-    this._pointController = new PointController(this._tripList, this._cards, this._generatedCardsData, this._generatedEditCardsData, this._onDataChange, this._onDataDelete);
-
-    render(this._tripDay.getElement(), this._tripList.getElement());
-    render(this._tripDays.getElement(), this._tripDay.getElement());
+    this._pointController = new PointController(this._generatedDays, this._cards, this._generatedCardsData, this._generatedEditCardsData, this._onDataChange, this._onDataDelete);
+    this._tripDays.getElement().append(...this._generatedDays);
+    // render(this._tripDay.getElement(), this._tripList.getElement());
+    // render(this._tripDays.getElement(), this._generateDay());
     render(this._container, this._tripDays.getElement());
   }
 
@@ -174,7 +181,10 @@ export default class TripController {
     this._cards[this._cards.findIndex((card) => card === selectedCard)] = editedCard;
     this._clearTripRoute();
     this._removeGeneratedComponent(this._generatedCardsData, cardComponent);
+    this._generatedCardsData = [];
     this._removeGeneratedComponent(this._generatedEditCardsData, cardEditComponent);
+    this._generatedEditCardsData = [];
+    // this._generatedDays = [];
 
     this._renderRoute();
     this._applyFilter(this._currentFilter);

@@ -1,13 +1,13 @@
 import TripCard from '../components/card.js';
 import TripCardEdit from '../components/card-edit.js';
-import {cutLastWord} from '../components/util.js';
+import {cutLastWord, render} from '../components/util.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
 
 export default class PointController {
-  constructor(container, cardsData, cardsArray, cardsEditArray, onDataChange, onDataDelete) {
-    this._container = container;
+  constructor(containers, cardsData, cardsArray, cardsEditArray, onDataChange, onDataDelete) {
+    this._containers = containers;
     this._cardsData = cardsData;
     this._generatedCardsData = cardsArray;
     this._generatedEditCardsData = cardsEditArray;
@@ -122,9 +122,19 @@ export default class PointController {
   }
 
   renderCards(cardsData = this._generatedCardsData) {
-    this._container.getElement().append(...cardsData.map((instance) => instance.element));
-  }
+    this._containers.filter((container) => {
+      console.log(container.querySelector(`.day__date`))
+      const dayNumber = new Date(container.querySelector(`.day__date`).getAttribute(`datetime`)).getDate();
+      cardsData.forEach((card) => {
 
+        if (card.instance._startDate.getDate() === dayNumber) {
+          const cardsList = container.querySelector(`.trip-events__list`);
+          render(cardsList, card.element);
+        }
+      });
+
+    });
+  }
   _closeEditableCard(card, cardEdit) {
     if (this._openedCard.card === null || this._openedCard.cardEdit === null) {
       this._openedCard.card = card;
