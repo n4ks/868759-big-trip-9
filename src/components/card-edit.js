@@ -13,7 +13,6 @@ export default class CardEdit extends AbstractComponent {
     this._startDate = StartDate;
     this._endDate = EndDate;
     this._isFavorite = IsFavorite;
-    console.log(this._offers)
   }
 
   get Description() {

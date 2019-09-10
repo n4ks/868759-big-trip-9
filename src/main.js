@@ -9,7 +9,6 @@ import {Position, createElement, render, getMinMaxDate, DatesOperationType} from
 
 const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
 const END_POINT = `https://htmlacademy-es-9.appspot.com/big-trip`;
-const CARDS_COUNT = 4;
 
 const Class = {
   VISUALLY_HIDDEN: `visually-hidden`,

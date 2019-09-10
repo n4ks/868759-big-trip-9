@@ -1,8 +1,8 @@
 export default class ModelCard {
   constructor(data) {
     this._id = data.id;
-    this._city = data.destination.name;
     this._type = data.type;
+    this._city = data.destination.name;
     this._description = data.destination.description;
     this._photos = data.destination.pictures.map((picture) => ({
       src: picture.src,
@@ -11,12 +11,12 @@ export default class ModelCard {
     this._startDate = new Date(data.date_from);
     this._endDate = new Date(data.date_to);
     this._ticketPrice = data.base_price;
-    this._isFavorite = data.is_favorite;
     this._offers = data.offers.map((offer) => ({
       title: offer.title,
       price: offer.price,
       isChecked: offer.accepted
     }));
+    this._isFavorite = data.is_favorite;
   }
 
   get Type() {

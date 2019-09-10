@@ -64,13 +64,16 @@ export default class TripController {
       case `price`:
         const sortedByPrice = this._generatedCardsData.slice().sort((a, b) => b.instance._ticketPrice - a.instance._ticketPrice);
         this._pointController.renderCards(sortedByPrice);
+        this._hideDayInfo();
         break;
       case `time`:
         const sortedByTime = this._generatedCardsData.slice().sort((a, b) => b.instance._endDate - a.instance._endDate);
         this._pointController.renderCards(sortedByTime);
+        this._hideDayInfo();
         break;
       case `default`:
         this._pointController.renderCards();
+        this._showDayInfo();
         break;
     }
   }
@@ -153,7 +156,6 @@ export default class TripController {
 
   _onDataChange(editedCard, selectedCard, cardComponent, cardEditComponent) {
     this._cards[this._cards.findIndex((card) => card === selectedCard)] = editedCard;
-
     this._clearTripRoute();
     this._removeGeneratedComponent(this._generatedCardsData, cardComponent);
     this._removeGeneratedComponent(this._generatedEditCardsData, cardEditComponent);
@@ -183,11 +185,17 @@ export default class TripController {
     }
   }
 
-  hide() {
-    this._container.classList.add(`visually-hidden`);
+  _hideDayInfo() {
+    const dayInfoElements = document.querySelectorAll(`.day__info`);
+    Array.from(dayInfoElements).forEach((element) => {
+      element.classList.add(`visually-hidden`);
+    });
   }
 
-  show() {
-    this._container.classList.remove(`visually-hidden`);
+  _showDayInfo() {
+    const dayInfoElements = document.querySelectorAll(`.day__info`);
+    Array.from(dayInfoElements).forEach((element) => {
+      element.classList.remove(`visually-hidden`);
+    });
   }
 }

@@ -1,5 +1,6 @@
-import TripCard from '../components/card';
-import TripCardEdit from '../components/card-edit';
+import TripCard from '../components/card.js';
+import TripCardEdit from '../components/card-edit.js';
+import {cutLastWord} from '../components/util.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
@@ -79,32 +80,30 @@ export default class PointController {
         const getCurrentOffersState = () => {
           const checkedOffers = formData.getAll(`event-offer`);
           let updatedOffers = [];
-
           if (cardEditComponent.Offers.length) {
             cardEditComponent.Offers.forEach((offer) => {
               offer.isChecked = false;
               checkedOffers.forEach((checkedOffer) => {
-                if (offer.name === checkedOffer) {
+                if (cutLastWord(offer.title) === checkedOffer) {
                   offer.isChecked = true;
                 }
               });
               updatedOffers.push(offer);
             });
           }
-
           return updatedOffers;
         };
 
         const entry = {
-          type: formData.get(`event-type`),
-          city: formData.get(`event-destination`),
-          description: cardEditComponent.Description,
-          photos: cardEditComponent.Photos,
-          startDate: new Date(formData.get(`event-start-time`)),
-          endDate: new Date(formData.get(`event-end-time`)),
-          ticketPrice: formData.get(`event-price`),
-          offers: getCurrentOffersState(),
-          isFavorite: formData.get(`event-favorite`)
+          Type: formData.get(`event-type`),
+          City: formData.get(`event-destination`),
+          Description: cardEditComponent.Description,
+          Photos: cardEditComponent.Photos,
+          StartDate: new Date(formData.get(`event-start-time`)),
+          EndDate: new Date(formData.get(`event-end-time`)),
+          TicketPrice: formData.get(`event-price`),
+          Offers: getCurrentOffersState(),
+          IsFavorite: formData.get(`event-favorite`)
         };
 
         this._onDataChange(entry, card, cardComponent, cardEditComponent);
