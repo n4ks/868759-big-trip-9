@@ -123,7 +123,6 @@ export default class PointController {
 
   renderCards(cardsData = this._generatedCardsData) {
     this._containers.filter((container) => {
-      console.log(container.querySelector(`.day__date`))
       const dayNumber = new Date(container.querySelector(`.day__date`).getAttribute(`datetime`)).getDate();
       cardsData.forEach((card) => {
 

@@ -160,6 +160,9 @@ export default class TripController {
     this._clearData(this._generatedDayInfoData);
     this._clearData(this._generatedCardsData);
     this._clearData(this._generatedEditCardsData);
+    this._generatedDayInfoData = [];
+    this._generatedCardsData = [];
+    this._generatedEditCardsData = [];
   }
 
   _clearData(data) {
