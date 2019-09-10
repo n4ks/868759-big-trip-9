@@ -10,13 +10,13 @@ import {render, unrender} from '../components/util.js';
 
 
 export default class TripController {
-  constructor(container, filters, dayInfos, cards) {
+  constructor(container, filters, cards) {
     this._container = container;
     this._filtersContainer = new FiltersContainer();
     this._filters = filters;
     this._tripDays = new TripDays();
     this._tripDay = new TripDay();
-    this._dayInfos = dayInfos;
+    this._dayInfos = null;
     this._tripList = new TripList();
     this._cards = cards;
     this._noCards = new NoCards();
@@ -78,12 +78,26 @@ export default class TripController {
     }
   }
 
-
   _renderFilter() {
     const filterOffers = this._filtersContainer.getElement()
       .querySelector(`.trip-sort__item--offers`);
 
     filterOffers.before(...this._generatedFiltersData.map((instance) => instance.element));
+  }
+
+  // Формируем массив объектов с уникальными начальными датами и нумерацией
+  _getDayInfos() {
+    let startDays = [];
+    let i = 1;
+    startDays = (this._cards.map((card) => `${card.StartDate.getFullYear()}-${card.StartDate.getMonth()}-${card.StartDate.getDate()}`));
+    const uniqueDays = new Set(startDays);
+
+    const uniqueDayInfos = Array.from(uniqueDays).map((day) => ({
+      dayNumber: i++,
+      date: day
+    }));
+
+    this._dayInfos = uniqueDayInfos;
   }
 
   _generateDayInfo(info) {
@@ -110,6 +124,8 @@ export default class TripController {
 
   _renderRoute() {
     // Информация о глобальной точке маршрута
+    this._getDayInfos();
+
     this._dayInfos.forEach((dayInfo) => this._generateDayInfo(dayInfo));
     this._renderDayInfo();
 

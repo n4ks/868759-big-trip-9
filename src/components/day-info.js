@@ -11,7 +11,7 @@ export default class DayInfo extends AbstractComponent {
   getTemplate() {
     return `<div class="day__info">
       <span class="day__counter">${this._dayNumber}</span>
-      <time class="day__date" datetime="2019-03-18">${getMonthAsString(this._date)} ${this._date.getDate()}</time>
+      <time class="day__date" datetime="2019-03-18">${getMonthAsString(new Date(this._date))} ${new Date(this._date).getDate()}</time>
     </div>`;
   }
 }
