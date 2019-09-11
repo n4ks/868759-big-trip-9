@@ -84,7 +84,14 @@ const cutLastWord = (text) => {
   return words[words.length - 1];
 };
 
+const removeChildElements = (parentElement) => {
+  while (parentElement.firstChild) {
+    parentElement.removeChild(parentElement.firstChild);
+  }
+};
+
 export {
   Position, createElement, render, unrender, capitalizeText, getTimeFromDate,
-  getMonthAsString, calculateDuration, getMinMaxDate, DatesOperationType, cutLastWord
+  getMonthAsString, calculateDuration, getMinMaxDate, DatesOperationType, cutLastWord,
+  removeChildElements
 };
