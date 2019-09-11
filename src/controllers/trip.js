@@ -73,7 +73,7 @@ export default class TripController {
         sortedByTime = [];
         break;
       case `default`:
-        let sortByDay = this._generatedCardsData.slice().sort((a, b) => b.instance.StartDate - a.instance.StartDate);
+        let sortByDay = this._generatedCardsData.slice().sort((a, b) => a.instance.StartDate - b.instance.StartDate);
         this._pointController.renderCards(sortByDay);
         this._showDayInfo();
         sortByDay = [];
