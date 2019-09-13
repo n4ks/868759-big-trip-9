@@ -1,24 +1,23 @@
-import TripInfo from './components/trip-info.js';
+// import TripInfo from './components/trip-info.js';
 import Menu from './components/menu.js';
 import Filter from './components/filters.js';
 import TripController from './controllers/trip.js';
 import RenderStats from './components/render-stats.js';
 import Data from './components/data.js';
+import SummaryController from './controllers/trip-summary.js';
 // utils
-import {Position, createElement, render, getMinMaxDate, DatesOperationType} from './components/util.js';
+import {Position, createElement, render} from './components/util.js';
 
 const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
 const END_POINT = `https://htmlacademy-es-9.appspot.com/big-trip`;
-
+const tripInfoElement = document.querySelector(`.trip-main__trip-info`);
 const Class = {
   VISUALLY_HIDDEN: `visually-hidden`,
   MENU_BTN_ACTIVE: `trip-tabs__btn--active`
 };
 
 const data = new Data({endPoint: END_POINT, authorization: AUTHORIZATION});
-data.getCards().then((cardData) => {
-
-  const tripInfoElement = document.querySelector(`.trip-main__trip-info`);
+data.getCards().then((cardsData) => {
   const tripPriceElement = tripInfoElement.querySelector(`.trip-info__cost-value`);
 
   const controlsElement = document.querySelector(`.trip-controls`);
@@ -76,26 +75,9 @@ data.getCards().then((cardData) => {
     }
   ];
 
-  // Создаём точки маршрута
-  // const generateCards = (count) => new Array(count).fill(``).map(generateCardsItems);
-  // const cardsMock = generateCards(CARDS_COUNT);
-
-  // const dayInfoItems = [
-  //   {
-  //     dayNumber: 1,
-  //     date: getMinMaxDate(cardData, DatesOperationType.STARTDATE_MIN)
-  //   }];
-
-  // Получаем информацию о маршруте для TripInfo
-  const calculateRoutePoints = (points) => {
-    return {
-      route: points.map((point) => point.City),
-      startDate: getMinMaxDate(cardData, DatesOperationType.STARTDATE_MIN),
-      endDate: getMinMaxDate(cardData, DatesOperationType.ENDDATE_MAX),
-    };
-  };
-
-  const routePoints = calculateRoutePoints(cardData);
+  // Рендерим информацию
+  const summaryController = new SummaryController(tripInfoElement, cardsData);
+  summaryController.init();
 
   // Получаем цену всех билетов и доп. услуг
   const getTicketsSum = (points) => points.map((point) => point.TicketPrice).reduce((sum, current) => sum + current);
@@ -103,16 +85,7 @@ data.getCards().then((cardData) => {
     .reduce((sum, current) => sum + current, 0))
     .reduce((sum, current) => sum + current));
 
-  tripPriceElement.textContent = getTicketsSum(cardData) + getOffersSum(cardData);
-
-  // Информация о маршруте
-  const renderTripInfo = (tripInfoData) => {
-    const tripInfo = new TripInfo(tripInfoData);
-
-    render(tripInfoElement, tripInfo.getElement(), Position.AFTER_BEGIN);
-  };
-
-  renderTripInfo(routePoints);
+  tripPriceElement.textContent = getTicketsSum(cardsData) + getOffersSum(cardsData);
 
   // 'Меню'
   const navigationContainer = createElement(navigationTemplate);
@@ -126,13 +99,13 @@ data.getCards().then((cardData) => {
       }
       switch (evt.target.id) {
         case `table`:
-          tripController.show();
+          tripController.showPage();
           evt.target.classList.add(Class.MENU_BTN_ACTIVE);
           stats.classList.add(Class.VISUALLY_HIDDEN);
           controlsElement.querySelector(`#stats`).classList.remove(Class.MENU_BTN_ACTIVE);
           break;
         case `stats`:
-          tripController.hide();
+          tripController.hidePage();
           evt.target.classList.add(Class.MENU_BTN_ACTIVE);
           stats.classList.remove(Class.VISUALLY_HIDDEN);
           controlsElement.querySelector(`#table`).classList.remove(Class.MENU_BTN_ACTIVE);
@@ -159,10 +132,11 @@ data.getCards().then((cardData) => {
   filterItems.forEach((filterItem) => renderFilters(filterItem));
   render(ControlsHeaders.SECOND, filtersContainer, Position.AFTER);
 
-  const tripController = new TripController(tripEventsElement, cardFiltersItems, cardData);
+
+  const tripController = new TripController(tripEventsElement, cardFiltersItems, cardsData, summaryController._onDataChange);
   tripController.init();
 
-  const renderStats = new RenderStats(cardData);
+  const renderStats = new RenderStats(cardsData);
   renderStats.init();
 });
 

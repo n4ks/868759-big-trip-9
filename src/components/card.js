@@ -12,6 +12,18 @@ export default class Card extends AbstractComponent {
     this._offers = Offers;
   }
 
+  get City() {
+    return this._city;
+  }
+
+  get StartDate() {
+    return this._startDate;
+  }
+
+  get EndDate() {
+    return this._endDate;
+  }
+
   getTemplate() {
     return `<li class="trip-events__item">
   <div class="event">

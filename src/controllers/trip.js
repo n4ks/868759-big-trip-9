@@ -8,9 +8,8 @@ import NoCards from '../components/no-cards.js';
 import PointController from '../controllers/point.js';
 import {render, unrender, removeChildElements} from '../components/util.js';
 
-
 export default class TripController {
-  constructor(container, filters, cards) {
+  constructor(container, filters, cards, changeSummary) {
     this._container = container;
     this._filtersContainer = new FiltersContainer();
     this._filters = filters;
@@ -25,9 +24,9 @@ export default class TripController {
     this._generatedEditCardsData = [];
     this._pointController = null;
     this._currentFilter = `default`;
-
     this._onDataChange = this._onDataChange.bind(this);
     this._onDataDelete = this._onDataDelete.bind(this);
+    this._changeSummary = changeSummary;
   }
 
   init() {
@@ -73,6 +72,7 @@ export default class TripController {
         sortedByTime = [];
         break;
       case `default`:
+        // Переформировываем структуру если начальная дата точки была изменена пользователем
         let sortByDay = this._generatedCardsData.slice().sort((a, b) => a.instance.StartDate - b.instance.StartDate);
         this._pointController.renderCards(sortByDay);
         this._showDayInfo();
@@ -157,7 +157,8 @@ export default class TripController {
     this._clearData(this._generatedCardsData);
     this._clearData(this._generatedEditCardsData);
     this._generatedDayInfoData = [];
-    // this._dayInfos = [];
+    this._generatedCardsData = [];
+    this._generatedEditCardsData = [];
   }
 
   _clearData(data) {
@@ -183,6 +184,8 @@ export default class TripController {
 
     this._renderRoute();
     this._applyFilter(this._currentFilter);
+    // Обновляем информацию о маршруте
+    this._changeSummary(this._generatedCardsData.map((card) => card.instance));
   }
 
   _onDataDelete(cardComponent, cardEditComponent, currentCard) {
@@ -218,5 +221,13 @@ export default class TripController {
     Array.from(dayInfoElements).forEach((element) => {
       element.classList.remove(`visually-hidden`);
     });
+  }
+
+  hidePage() {
+    this._container.classList.add(`visually-hidden`);
+  }
+
+  showPage() {
+    this._container.classList.remove(`visually-hidden`);
   }
 }

@@ -6,18 +6,18 @@ import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
 
 export default class PointController {
-  constructor(containers, cardsData, cardsArray, cardsEditArray, onDataChange, onDataDelete) {
+  constructor(containers, cardsData, cardsArray, cardsEditArray, onDataChange, onDataDelete, change) {
     this._containers = containers;
     this._cardsData = cardsData;
     this._generatedCardsData = cardsArray;
     this._generatedEditCardsData = cardsEditArray;
     this._onDataChange = onDataChange;
     this._onDataDelete = onDataDelete;
+    this._change = change;
     this._openedCard = {
       card: null,
       cardEdit: null
     };
-
     this.create();
   }
 
@@ -116,7 +116,7 @@ export default class PointController {
     this._createDataStore(this._generatedCardsData, cardComponent);
     this._createDataStore(this._generatedEditCardsData, cardEditComponent);
   }
-
+  // Создаём хранилище для экземпляров классов (для дальнейшего обнуления ссылок) и элементов (для отрисовки в DOM через spread)
   _createDataStore(arr, component) {
     return arr.push({'instance': component, 'element': component.getElement()});
   }
@@ -131,7 +131,6 @@ export default class PointController {
           render(cardsList, card.element);
         }
       });
-
     });
   }
   _closeEditableCard(card, cardEdit) {
