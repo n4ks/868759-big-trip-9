@@ -35,8 +35,30 @@ export default class RenderStats {
 
   _generateMoneyChart() {
     const moneyCtx = this._stats.getElement().querySelector(`.statistics__chart--money`);
+    // Получаем массив типов событий
     const moneyChartLabels = new Set(this._data.map((point) => point.Type));
+    // test Получаем массив уникальных тайпов
+    const moneyChartLabels2 = [...new Set(this._data.map((point) => point.Type))];
+    // Создаём новый массив на основе массива уникальных тайпов
+    const moneyChartTotal = moneyChartLabels2.map((label) => {
+      let sum = 0;
+      // Циклом пробегаемся по всем поинтам, находим совпадения тайпов
+      this._data.forEach((point) => {
+        if (point.Type === label) {
+          // Если совпадение найдено получаем сумму всех точек с таким тайпом
+          sum += point.TicketPrice;
+        }
+      });
+      // Возвращает объект с тайпом и суммой
+      return {type: label, price: sum};
+    });
+    // Сортируем по убыванию
+    const moneyChartTotalSorted = moneyChartTotal.sort((a, b) => b.price - a.price);
+    // Получаем массивы тайпов и цен для чарта
+    const labels = moneyChartTotalSorted.map((obj) => obj.type);
+    const prices = moneyChartTotalSorted.map((obj) => obj.price);
 
+    // test
     const moneyChartPrice = Array.from(moneyChartLabels).map((label) => {
       let sum = 0;
       this._data.forEach((point) => {
@@ -51,10 +73,10 @@ export default class RenderStats {
     this._moneyChart = new Chart(moneyCtx, {
       type: ChartConfig.TYPE,
       data: {
-        labels: Array.from(moneyChartLabels),
+        labels: labels,
         datasets: [{
           label: ChartConfig.LABEL_MONEY,
-          data: moneyChartPrice,
+          data: prices,
           backgroundColor: [
             Color.PINK,
             Color.BLUE,
