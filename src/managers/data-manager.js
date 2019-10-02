@@ -1,4 +1,4 @@
-import ModelCard from './model-card.js';
+import PointModel from '../components/adapter.js';
 
 const Method = {
   GET: `GET`,
@@ -9,7 +9,8 @@ const Method = {
 
 const URL = {
   POINTS: `points`,
-  DESTINATIONS: `destinations`
+  DESTINATIONS: `destinations`,
+  OFFERS: `offers`
 };
 
 const CONTENT_TYPE = {'Content-Type': `application/json`};
@@ -30,48 +31,58 @@ const toJSON = (response) => {
   return response.json();
 };
 
-export default class Data {
+export default class DataManager {
   constructor({endPoint, authorization}) {
     this._endPoint = endPoint;
     this._authorization = authorization;
   }
 
-  getCards() {
-    return this._load()
+  getPoints() {
+    return this._load({url: URL.POINTS})
       .then(toJSON)
-      .then(ModelCard.parseCards);
+      .then(PointModel.parsePoints);
   }
 
-  createCard({card}) {
+  createPoint({data}) {
     return this._load({
+      url: URL.POINTS,
       method: Method.POST,
-      body: JSON.stringify(card),
+      body: JSON.stringify(data),
       headers: new Headers(CONTENT_TYPE)
     })
       .then(toJSON)
-      .then(ModelCard.parseCard);
+      .then(PointModel.parsePoint);
   }
 
-  updateCard({id, card}) {
+  updatePoint({id, data}) {
     return this._load({
       method: Method.PUT,
-      body: JSON.stringify(card),
+      body: JSON.stringify(data),
       headers: new Headers(CONTENT_TYPE),
-      url: `${URL}/${id}`
+      url: `${URL.POINTS}/${id}`
     })
       .then(toJSON)
-      .then(ModelCard.parseCard);
+      .then(PointModel.parsePoint);
   }
 
-  deleteCard({id}) {
+  deletePoint({id}) {
     return this._load({
       method: Method.DELETE,
-      url: `${URL}/${id}`
-    })
+      url: `${URL.POINTS}/${id}`
+    });
+  }
+
+  getDestinations() {
+    return this._load({url: URL.DESTINATIONS})
       .then(toJSON);
   }
 
-  _load(method = Method.GET, body = null, headers = new Headers(), url = URL.POINTS) {
+  getOffers() {
+    return this._load({url: URL.OFFERS})
+      .then(toJSON);
+  }
+
+  _load({url, method = Method.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
 
     return fetch(`${this._endPoint}/${url}`, {method, body, headers})

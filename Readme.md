@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 - Студент: [Дмитрий Мазур](https://up.htmlacademy.ru/ecmascript/9/user/868759).
-- Наставник: `Владимир Якушкин`.
+- Наставник: `Нет`.
 
 ---
 

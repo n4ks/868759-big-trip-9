@@ -1,22 +1,38 @@
 import AbstractComponent from './abstract-component.js';
-import {capitalizeText, cutLastWord} from './util.js';
+import {createElement, calculateDuration, getPointLabel} from './util.js';
+import moment from 'moment';
 
-export default class CardEdit extends AbstractComponent {
-  constructor({Type, City, Description, Photos, TicketPrice, Offers, StartDate, EndDate, IsFavorite}) {
+const OFFERS_COUNT = 3;
+
+export default class Point extends AbstractComponent {
+  constructor({id, type, city, description, photos, ticketPrice, offers, startDate, endDate, isFavorite}, citiesList) {
     super();
-    this._type = Type;
-    this._city = City;
-    this._description = Description;
-    this._photos = Photos;
-    this._ticketPrice = TicketPrice;
-    this._offers = Offers;
-    this._startDate = StartDate;
-    this._endDate = EndDate;
-    this._isFavorite = IsFavorite;
+    this._id = id;
+    this._element = null;
+    this._editElement = null;
+    this._type = type;
+    this._city = city;
+    this._description = description;
+    this._photos = photos;
+    this._ticketPrice = ticketPrice;
+    this._offers = offers;
+    this._startDate = startDate;
+    this._endDate = endDate;
+    this._isFavorite = isFavorite;
+    this._citiesList = citiesList;
+    this._changeEventType();
   }
 
-  get Description() {
-    return this._description;
+  get Id() {
+    return this._id;
+  }
+
+  get Type() {
+    return this._type;
+  }
+
+  get City() {
+    return this._city;
   }
 
   get StartDate() {
@@ -27,15 +43,91 @@ export default class CardEdit extends AbstractComponent {
     return this._endDate;
   }
 
-  get Photos() {
-    return this._photos;
-  }
-
   get Offers() {
     return this._offers;
   }
 
+  get Photos() {
+    return this._photos;
+  }
+
+  get Description() {
+    return this._description;
+  }
+
+  getEditElement() {
+    if (!this._editElement) {
+      this._editElement = createElement(this.getEditTemplate());
+    }
+
+    return this._editElement;
+  }
+
+  removeEditElement() {
+    if (this._editElement) {
+      this._editElement = null;
+    }
+  }
+
+  _changeEventType() {
+    const typeInputs = [...this.getEditElement().querySelectorAll(`.event__type-input`)];
+    typeInputs.forEach((input) => {
+      if (input.value === this._type) {
+        input.setAttribute(`checked`, true);
+      }
+    });
+  }
+
+  _getOffers() {
+    let checkedOffers = [];
+
+    this._offers.forEach((offer) => {
+      if (checkedOffers.length < OFFERS_COUNT && offer.isChecked) {
+        checkedOffers.push(offer);
+      }
+    });
+
+    return checkedOffers.map(({title, price}) => `
+    <li class="event__offer">
+      <span class="event__offer-title">${title}</span>
+      &plus;&euro;&nbsp;<span class="event__offer-price">${price}</span>
+    </li>`).join(``);
+  }
+
   getTemplate() {
+    return `<li class="trip-events__item">
+  <div class="event">
+    <div class="event__type">
+      <img class="event__type-icon" width="42" height="42" src="img/icons/${this._type}.png" alt="Event type icon">
+    </div>
+    <h3 class="event__title">${getPointLabel(this._type)} ${this._city}</h3>
+
+    <div class="event__schedule">
+      <p class="event__time">
+        <time class="event__start-time" datetime="2019-03-18T10:30">${moment(this._startDate).format(`HH:mm`)}</time>
+        &mdash;
+        <time class="event__end-time" datetime="2019-03-18T11:00">${moment(this._endDate).format(`HH:mm`)}</time>
+      </p>
+      <p class="event__duration">${calculateDuration(this._endDate, this._startDate)}</p>
+    </div>
+
+    <p class="event__price">
+      &euro;&nbsp;<span class="event__price-value">${this._ticketPrice}</span>
+    </p>
+
+    <h4 class="visually-hidden">Offers:</h4>
+    <ul class="event__selected-offers">
+    ${this._getOffers()}
+    </ul>
+
+    <button class="event__rollup-btn" type="button">
+      <span class="visually-hidden">Open event</span>
+    </button>
+  </div>
+</li>`;
+  }
+
+  getEditTemplate() {
     return `<li class="trip-events__item">
     <form class="event  event--edit" action="#" method="post">
       <header class="event__header">
@@ -81,7 +173,7 @@ export default class CardEdit extends AbstractComponent {
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
+                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight">
                 <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
               </div>
             </fieldset>
@@ -109,13 +201,11 @@ export default class CardEdit extends AbstractComponent {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${capitalizeText(this._type)} at
+            ${getPointLabel(this._type)}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._city}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._city}" list="destination-list-1" onkeypress="return false">
           <datalist id="destination-list-1">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
+            ${this._citiesList.map((city) => `<option value="${city}"></option>`).join(``)}
           </datalist>
         </div>
 
@@ -156,21 +246,21 @@ export default class CardEdit extends AbstractComponent {
       </header>
 
       <section class="event__details">
-
-        <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-          <div class="event__available-offers">
-            ${this._offers.map(({title, price, isChecked}) => `
-        <div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${cutLastWord(title)}-1" type="checkbox" name="event-offer" value="${cutLastWord(title)}"
-          ${isChecked ? `checked` : ``}>
-          <label class="event__offer-label" for="event-offer-${cutLastWord(title)}-1">
-            <span class="event__offer-title">${title}</span>
-            &plus;&euro;&nbsp;<span class="event__offer-price">${price}</span>
-          </label>
-        </div>`).join(``)}
+      ${this._offers.length > 0 ? `<section class="event__section  event__section--offers">
+        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+        <div class="event__available-offers">
+          ${this._offers.map(({title, price, isChecked}) => `
+    <div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title.replace(` `, `-`)}-1" type="checkbox" name="event-offer" value="${title.replace(` `, `-`)}"
+      ${isChecked ? `checked` : ``}>
+      <label class="event__offer-label" for="event-offer-${title.replace(` `, `-`)}-1">
+        <span class="event__offer-title">${title}</span>
+        &plus;&euro;&nbsp;<span class="event__offer-price">${price}</span>
+      </label>
+    </div>`).join(``)}
         </div>
-       </section >
+      </section >` : ``}
+
 
     <section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -178,7 +268,7 @@ export default class CardEdit extends AbstractComponent {
 
       <div class="event__photos-container">
         <div class="event__photos-tape">
-          ${this._photos.map((photo) => `<img class="event__photo" src="${photo.src}photo.jpg" name="photo" alt="${photo.alt}">`).join(``)}
+          ${this._photos.map((photo) => `<img class="event__photo" src="${photo.src}" name="photo" alt="${photo.alt}">`).join(``)}
         </div >
       </div >
     </section >
