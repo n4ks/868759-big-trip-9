@@ -69,7 +69,7 @@ export default class RenderManager {
       const pointsList = dayContainer.getElement().querySelector(`.trip-events__list`);
 
       points.forEach((point) => {
-        if (moment(point.StartDate).format(`YYYY-MM-DD`) === dayDate) {
+        if (moment(point.startDate).format(`YYYY-MM-DD`) === dayDate) {
           this.renderPoint(pointsList, point.getElement());
         }
       });

@@ -85,59 +85,59 @@ export default class Controller {
     this._statsChart = null;
   }
 
-  get Menu() {
+  get menu() {
     return this._menu;
   }
 
-  get Filters() {
+  get filters() {
     return this._filters;
   }
 
-  get CurrentFilter() {
+  get currentFilter() {
     return this._currentFilter;
   }
 
-  set CurrentFilter(val) {
+  set currentFilter(val) {
     this._currentFilter = val;
   }
 
-  get Sorting() {
+  get sorting() {
     return this._sorting;
   }
 
-  get CurrentSorting() {
+  get currentSorting() {
     return this._currentSorting;
   }
 
-  set CurrentSorting(val) {
+  set currentSorting(val) {
     this._currentSorting = val;
   }
 
-  get Points() {
+  get points() {
     return this._points;
   }
 
-  get EditablePoint() {
+  get editablePoint() {
     return this._editablePoint;
   }
 
-  set EditablePoint(val) {
+  set editablePoint(val) {
     this._editablePoint = val;
   }
 
-  get CurrentPoint() {
+  get currentPoint() {
     return this._currentPoint;
   }
 
-  set CurrentPoint(val) {
+  set currentPoint(val) {
     this._currentPoint = val;
   }
 
-  get NewPoint() {
+  get newPoint() {
     return this._newPoint;
   }
 
-  get CitiesList() {
+  get citiesList() {
     return this._citiesList;
   }
 
@@ -364,7 +364,7 @@ export default class Controller {
   // Удаление точки
   onDataDelete(deletedPoint) {
     this._toggleFormElements(FormState.DISABLED, ButtonAction.DELETING);
-    this._dataManager.deletePoint({id: deletedPoint.Id})
+    this._dataManager.deletePoint({id: deletedPoint.id})
       .then(() => {
         this._toggleFormElements(FormState.ENABLED, ButtonAction.DELETE);
         deletedPoint.removeElement();

@@ -8,7 +8,7 @@ export default class Offers extends AbstractComponent {
 
   getTemplate() {
     return `<section class="event__section  event__section--offers">
-    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+    <h3 class="event__section-title  event__section-title--offers">offers</h3>
     <div class="event__available-offers">
       ${this._offersData.map(({title, price, isChecked = false}) => `
   <div class="event__offer-selector">

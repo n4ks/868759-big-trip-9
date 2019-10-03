@@ -116,7 +116,7 @@ const calculateDuration = (secondDate, firstDate) => {
   return result;
 };
 // Ищем точку в исходном массиве данных
-const getPointIndex = (data, point) => data.findIndex((pointData) => pointData.id === point.Id);
+const getPointIndex = (data, point) => data.findIndex((pointData) => pointData.id === point.id);
 
 const getCities = (data) => {
   return data.map((point) => point.city);
@@ -168,7 +168,17 @@ const getPointLabel = (pointType) => {
 };
 
 export {
-  removeLastWord, createElement, addDayNumber, formatDateAsDayMonth, getTotalSum,
-  calculateDuration, getPointIndex, getCities, getCitiesSummary, getMinMaxDates, getDatesSummary,
-  getEventPlaceholder, getPointLabel
+  removeLastWord,
+  createElement,
+  addDayNumber,
+  formatDateAsDayMonth,
+  getTotalSum,
+  calculateDuration,
+  getPointIndex,
+  getCities,
+  getCitiesSummary,
+  getMinMaxDates,
+  getDatesSummary,
+  getEventPlaceholder,
+  getPointLabel
 };
