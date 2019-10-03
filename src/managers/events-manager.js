@@ -285,7 +285,7 @@ export default class EventsManager {
     }
 
     // Из за того что структура разметки новой точки и точки редактирования различаются делаем проверку
-    let form = point.id !== NEW_POINT_ID ? point.getEditElement().querySelector(`.event--edit`) : point.getEditElement();
+    const form = point.id !== NEW_POINT_ID ? point.getEditElement().querySelector(`.event--edit`) : point.getEditElement();
 
     const formData = new FormData(form);
 
