@@ -1,7 +1,6 @@
 import AbstractComponent from './abstract-component.js';
 
 export default class Statistics extends AbstractComponent {
-
   getTemplate() {
     return `<section class="statistics visually-hidden">
     <h2 class="visually-hidden">Trip statistics</h2>

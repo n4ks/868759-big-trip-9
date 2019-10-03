@@ -26,35 +26,35 @@ export default class NewPoint {
     this._changeEventType();
   }
 
-  get Id() {
+  get id() {
     return this._id;
   }
 
-  get Type() {
+  get type() {
     return this._type;
   }
 
-  get City() {
+  get city() {
     return this._city;
   }
 
-  get StartDate() {
+  get startDate() {
     return this._startDate;
   }
 
-  get EndDate() {
+  get endDate() {
     return this._endDate;
   }
 
-  get Offers() {
+  get offers() {
     return this._offers;
   }
 
-  get Photos() {
+  get photos() {
     return this._photos;
   }
 
-  get Description() {
+  get description() {
     return this._description;
   }
 

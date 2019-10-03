@@ -23,35 +23,35 @@ export default class Point extends AbstractComponent {
     this._changeEventType();
   }
 
-  get Id() {
+  get id() {
     return this._id;
   }
 
-  get Type() {
+  get type() {
     return this._type;
   }
 
-  get City() {
+  get city() {
     return this._city;
   }
 
-  get StartDate() {
+  get startDate() {
     return this._startDate;
   }
 
-  get EndDate() {
+  get endDate() {
     return this._endDate;
   }
 
-  get Offers() {
+  get offers() {
     return this._offers;
   }
 
-  get Photos() {
+  get photos() {
     return this._photos;
   }
 
-  get Description() {
+  get description() {
     return this._description;
   }
 
@@ -115,7 +115,7 @@ export default class Point extends AbstractComponent {
       &euro;&nbsp;<span class="event__price-value">${this._ticketPrice}</span>
     </p>
 
-    <h4 class="visually-hidden">Offers:</h4>
+    <h4 class="visually-hidden">offers:</h4>
     <ul class="event__selected-offers">
     ${this._getOffers()}
     </ul>
@@ -247,7 +247,7 @@ export default class Point extends AbstractComponent {
 
       <section class="event__details">
       ${this._offers.length > 0 ? `<section class="event__section  event__section--offers">
-        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+        <h3 class="event__section-title  event__section-title--offers">offers</h3>
         <div class="event__available-offers">
           ${this._offers.map(({title, price, isChecked}) => `
     <div class="event__offer-selector">

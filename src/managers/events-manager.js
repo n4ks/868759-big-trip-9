@@ -35,7 +35,7 @@ export default class EventsManager {
 
   // Меню
   addMenuEventListeners() {
-    const menuButtons = [...this._controller.Menu];
+    const menuButtons = [...this._controller.menu];
     const controlsElement = document.querySelector(`.trip-controls`);
     const routeElement = document.querySelector(`.trip-events`);
     const newEventBtn = document.querySelector(`.trip-main__event-add-btn`);
@@ -70,7 +70,7 @@ export default class EventsManager {
 
   // Фильтрация
   addFiltersEventListener() {
-    this._controller.Filters.forEach((filterObj) => filterObj
+    this._controller.filters.forEach((filterObj) => filterObj
       .getElement().addEventListener(`click`, this._onFilterButtonClick.bind(this)));
   }
 
@@ -79,13 +79,13 @@ export default class EventsManager {
       return;
     }
     // Обновляем тип фильттра и перерендериваем точки
-    this._controller.CurrentFilter = evt.target.dataset.sortType;
+    this._controller.currentFilter = evt.target.dataset.sortType;
     this._controller.updateRoute();
   }
 
   // Сортировка
   addSortingEventListener() {
-    this._controller.Sorting.forEach((sortingObj) => sortingObj
+    this._controller.sorting.forEach((sortingObj) => sortingObj
       .getElement().addEventListener(`click`, this._onSortButtonClick.bind(this)));
   }
 
@@ -94,13 +94,13 @@ export default class EventsManager {
       return;
     }
     // Обновляем тип фильттра и перерендериваем точки
-    this._controller.CurrentSorting = evt.target.dataset.sortType;
+    this._controller.currentSorting = evt.target.dataset.sortType;
     this._controller.updateRoute();
   }
 
   // Точки машрута
   addPointsEventListeners() {
-    this._controller.Points.forEach((point) => {
+    this._controller.points.forEach((point) => {
       // Добавляем переключение режимов просмотра/редактирования точек
       const editModeButton = point.getElement().querySelector(`.event__rollup-btn`);
       editModeButton.addEventListener(`click`, (evt) => {
@@ -127,14 +127,14 @@ export default class EventsManager {
   _onPointEditClick(evt, point) {
     evt.preventDefault();
     // Получаем тип текущей точки для отката значений если пользователь не сохраняет изменения
-    this._controller.CurrentPoint = point;
+    this._controller.currentPoint = point;
 
     this._getEditFormElements(point);
 
     // Собираем данные для destination
     this._currentPointDestination = {
-      description: point.Description,
-      pictures: point.Photos
+      description: point.description,
+      pictures: point.photos
     };
 
     // Проверяем наличие открытых карточек и закрываем в случае необходимости
@@ -195,7 +195,7 @@ export default class EventsManager {
 
   _onCityChange(evt) {
     // Проверяем соответствует ли значение одному из доступных
-    this._controller.CitiesList.forEach((city) => {
+    this._controller.citiesList.forEach((city) => {
       if (evt.target.value === city) {
         this._controller.loadDestination(evt.target.value);
       }
@@ -219,12 +219,12 @@ export default class EventsManager {
   _onEscKeyDown(evt) {
     if (evt.key === `Escape`) {
       // Откатываем изменения и скрываем список
-      this._changePointInfo(this._controller.CurrentPoint.Type);
+      this._changePointInfo(this._controller.currentPoint.type);
       this._hidePointElements();
-      this._changePointMode(this._controller.EditablePoint, PointMode.DEFAULT);
+      this._changePointMode(this._controller.editablePoint, PointMode.DEFAULT);
       // Откатываем изменения в destinations
       this._controller.updateDestination(this._currentPointDestination);
-      this._controller.updateOffers(this._controller.CurrentPoint.Offers);
+      this._controller.updateOffers(this._controller.currentPoint.offers);
       document.removeEventListener(`keydown`, this._onEscKeyDownEvt);
     }
   }
@@ -241,26 +241,26 @@ export default class EventsManager {
   // Перевод открытой карточки в режим просмотра
   _onSelectAnotherChange(point) {
     document.removeEventListener(`keydown`, this._onEscKeyDownEvt);
-    if (this._controller.NewPoint !== null) {
+    if (this._controller.newPoint !== null) {
       this._controller.removeNewPoint();
     }
 
-    if (this._controller.EditablePoint === null) {
-      this._controller.EditablePoint = point;
+    if (this._controller.editablePoint === null) {
+      this._controller.editablePoint = point;
       this._changePointMode(point, PointMode.EDIT);
     } else {
       // Откатываем изменения и скрываем список
-      this._changePointInfo(this._controller.CurrentPoint.Type);
+      this._changePointInfo(this._controller.currentPoint.type);
       this._hidePointElements();
 
       // Откатываем изменения в destinations и offers
-      this._controller.updateOffers(this._controller.CurrentPoint.Offers);
+      this._controller.updateOffers(this._controller.currentPoint.offers);
       this._controller.updateDestination(this._currentPointDestination);
 
       // Переводим открытую каточку в режим просмотра, а текущую в режим редактирования
-      this._changePointMode(this._controller.EditablePoint, PointMode.DEFAULT);
+      this._changePointMode(this._controller.editablePoint, PointMode.DEFAULT);
       this._changePointMode(point, PointMode.EDIT);
-      this._controller.EditablePoint = point;
+      this._controller.editablePoint = point;
     }
   }
 
@@ -285,12 +285,8 @@ export default class EventsManager {
     }
 
     // Из за того что структура разметки новой точки и точки редактирования различаются делаем проверку
-    let form;
-    if (point.Id !== NEW_POINT_ID) {
-      form = point.getEditElement().querySelector(`.event--edit`);
-    } else {
-      form = point.getEditElement();
-    }
+    let form = point.id !== NEW_POINT_ID ? point.getEditElement().querySelector(`.event--edit`) : point.getEditElement();
+
     const formData = new FormData(form);
 
     // Получаем текущее состояние офферов с формы
@@ -319,7 +315,7 @@ export default class EventsManager {
     };
 
     const entry = {
-      id: point.Id,
+      id: point.id,
       type: formData.get(`event-type`),
       city: formData.get(`event-destination`),
       description: point.getEditElement().querySelector(`.event__destination-description`).textContent,
@@ -346,7 +342,7 @@ export default class EventsManager {
     const startDateInput = point.getEditElement().querySelector(`#event-start-time-1`);
     const fpStartDateInst = flatpickr(startDateInput, {
       enableTime: true,
-      defaultDate: point.StartDate,
+      defaultDate: point.startDate,
       altInput: true,
       altFormat: `d.m.y H:i`,
     });
@@ -354,21 +350,21 @@ export default class EventsManager {
     const endDateInput = point.getEditElement().querySelector(`#event-end-time-1`);
     const fpEndDateInst = flatpickr(endDateInput, {
       enableTime: true,
-      defaultDate: point.EndDate,
+      defaultDate: point.endDate,
       altInput: true,
       altFormat: `d.m.y H:i`,
-      minDate: point.StartDate
+      minDate: point.startDate
     });
 
     // Если это не карточка создания точки вставляем дату при открытии
-    if (point.Id !== NEW_POINT_ID) {
+    if (point.id !== NEW_POINT_ID) {
       point.getElement().querySelector(`.event__rollup-btn`)
         .addEventListener(`click`, (evt) => {
           // Очищаем форму здесь, иначе flatpickr не может нормально переинициализировать значение и не выводит его (ранее очищалось при переключении карточек)
           this._resetUnsavedForm(point);
           if (evt.target.classList.contains(`event__rollup-btn`)) {
-            fpStartDateInst.setDate(point.StartDate);
-            fpEndDateInst.setDate(point.EndDate);
+            fpStartDateInst.setDate(point.startDate);
+            fpEndDateInst.setDate(point.endDate);
           }
         });
     }
@@ -391,27 +387,27 @@ export default class EventsManager {
     evt.preventDefault();
     document.removeEventListener(`keydown`, this._onEscKeyDownEvt);
     // Закрываем открытые карточки
-    if (this._controller.EditablePoint !== null) {
-      this._changePointMode(this._controller.EditablePoint, PointMode.DEFAULT);
+    if (this._controller.editablePoint !== null) {
+      this._changePointMode(this._controller.editablePoint, PointMode.DEFAULT);
     }
 
     // Создаём форму
     this._controller.createNewPoint();
-    this._controller.CurrentPoint = this._controller.NewPoint;
-    this._getEditFormElements(this._controller.NewPoint);
+    this._controller.currentPoint = this._controller.newPoint;
+    this._getEditFormElements(this._controller.newPoint);
     // Добавляем события для взаимодействия с элементами и flatpickr
-    this._addPointsInnerListeners(this._controller.NewPoint);
-    this._initFlatpickr(this._controller.NewPoint);
+    this._addPointsInnerListeners(this._controller.newPoint);
+    this._initFlatpickr(this._controller.newPoint);
     this._newEventBtn.disabled = true;
 
     // Добавляем логику на кнопку сохранения
-    const saveBtn = this._controller.NewPoint.getEditElement().querySelector(`.event__save-btn`);
+    const saveBtn = this._controller.newPoint.getEditElement().querySelector(`.event__save-btn`);
 
     saveBtn.addEventListener(`click`, (saveEvt) => {
-      this._onSaveButtonClick(saveEvt, this._controller.NewPoint);
+      this._onSaveButtonClick(saveEvt, this._controller.newPoint);
     });
 
-    const cancelBtn = this._controller.NewPoint.getEditElement().querySelector(`.event__reset-btn`);
+    const cancelBtn = this._controller.newPoint.getEditElement().querySelector(`.event__reset-btn`);
 
     cancelBtn.addEventListener(`click`, this._onCancelBtnClick.bind(this));
   }
